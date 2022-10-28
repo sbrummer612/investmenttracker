@@ -1,1 +1,1 @@
-web: java -Dspring.profiles.active=heroku -Dserver.port=$PORT -jar target/InvestmentTracker-0.0.1-SNAPSHOT.jar
+web: java -Dspring.profiles.active=heroku -Dserver.port=$PORT -jar target/investmenttracker-0.0.1-SNAPSHOT.jar
