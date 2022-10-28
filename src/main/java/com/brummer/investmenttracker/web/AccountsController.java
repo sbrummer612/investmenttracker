@@ -1,5 +1,7 @@
 package com.brummer.investmenttracker.web;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +18,7 @@ import com.brummer.investmenttracker.accounts.AccountRepository;
 public class AccountsController {
 
 	private final AccountRepository accountRepository;
+	private final String redirect = "redirect:/accountsController/accounts";
 	
 	public AccountsController(AccountRepository accountRepository) {
 		this.accountRepository = accountRepository;
@@ -30,7 +33,7 @@ public class AccountsController {
 	@PostMapping("/addUpdateAccount")
 	public String addAccount(@ModelAttribute Account account) {
 		accountRepository.save(account);
-		return "redirect:/accountsController/accounts";
+		return redirect;
 	}
 	
 	@GetMapping("/deleteAccount")
@@ -39,7 +42,18 @@ public class AccountsController {
 			Long idLong = Long.parseLong(id);
 			accountRepository.deleteById(idLong);
 		}
-		return "redirect:/accountsController/accounts";
+		return redirect;
+	}
+	
+	@GetMapping("/editAccount")
+	public String editAccount(@RequestParam String id, Model model) {
+		if(id != null) {
+			Long idLong = Long.parseLong(id);
+			Optional<Account> obj = accountRepository.findById(idLong);
+			model.addAttribute("account", obj.get());
+			model.addAttribute("accounts", accountRepository.findAll());
+		}
+		return "accounts";
 	}
 	
 }
