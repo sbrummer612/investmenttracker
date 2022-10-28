@@ -7,7 +7,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Accounts</title>
-    <link rel="stylesheet" href="/main.css" />
+    <link rel="stylesheet" href="../static/main.css" />
     <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
         rel="stylesheet">
 </head>
@@ -22,7 +22,7 @@
 			<td>Account Name</td>
 			<td>Account Number</td>
 			<td>Account Description</td>
-			<td></td>
+			<td>Actions</td>
 			
 		</tr>
 		<tr th:if="${#lists.isEmpty(accounts)}">
@@ -54,9 +54,24 @@
 			<input class="form-control" name="description" placeholder="Enter Account Description" th:value="${account.description}" type="text" />
 		</div>
 		<input class="btn btn-primary" type="submit" value="Update Account" />
+		<input class="btn btn-primary" type="button" onclick="window.location.replace('/accountsController/accounts')" value="Cancel" />
 	</form>
 </div>
-<div class="container">
+
+<script>
+function ShowNewAccountDiv() {
+  var x = document.getElementById("newAccount");
+  var y = document.getElementById("newAccountButton")
+  if (x.style.display === "none") {
+    x.style.display = "block";
+    y.innerHTML="Cancel New Account";
+  } else {
+    x.style.display = "none";
+    y.innerHTML="Add New Account";
+  }
+}
+</script>
+<div class="container" id="newAccount" style="display:none;">
 	<h2>Add New Account</h2>
 	<form class="col card p-3 mb-5" th:method="post" th:action="@{'/accountsController/addUpdateAccount'}">
 		<div class="form-group">
@@ -71,8 +86,12 @@
 			<label for="description">Account Description</label>
 			<input class="form-control" name="description" placeholder="Enter Account Description" value="" type="text" />
 		</div>
-		<input class="btn btn-primary" type="submit" value="Add New Account" />
+		<input class="btn btn-primary" type="submit" value="Save New Account" />
+		
 	</form>
+</div>
+<div class="container"><br>
+	<button class="btn btn-primary" id="newAccountButton" value="Add New Account" onclick="ShowNewAccountDiv()">Add New Account</button>
 </div>
 
 </body>
