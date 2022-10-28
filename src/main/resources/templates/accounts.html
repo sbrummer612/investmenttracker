@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	th:replace="~{fragments/header :: header (~{::body},'db')}">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Accounts</title>
+    <!-- <link rel="stylesheet" href="/main.css" /> -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+        rel="stylesheet">
+</head>
+<body class="container">
+<div class="container">
+	
+	<h1>Accounts</h1>
+	<h2></h2>
+
+    <table class="table table-striped table-bordered">
+		<tr>
+			<td>Account Name</td>
+			<td>Account Number</td>
+			<td>Account Description</td>
+			<td></td>
+			
+		</tr>
+		<tr th:if="${#lists.isEmpty(accounts)}">
+			<td colspan="3">No Accounts found.</td>
+		</tr>
+		<tr th:each="account : ${accounts}">
+			<td th:text="${account.name}"></td>
+			<td th:text="${account.number}"></td>
+			<td th:text="${account.description}"></td>
+			<td><a href="" th:href="@{/accountsController/editAccount(id=${account.id})}">Edit Account</a> | 
+			<a href="" th:href="@{/accountsController/deleteAccount(id=${account.id})}">Delete Account</a></td>
+		</tr>
+	</table>
+	<!-- 
+	<table>
+        <tbody>
+		<tr th:each="account : ${accounts}">
+            <td>
+                <form th:method="post"
+                      th:action="@{'/accountsController/addUpdateAccount'}" th:object="${account}" >
+                      <input name="id" th:value="${account.id}" type="hidden" />
+                      Account Name: <br><input name="name" th:value="${account.name}" type="text" /> 
+                      Account Number: <br><input name="number" th:value="${account.number}" type="text" />
+                      Account Description: <br><input name="description" th:value="${account.description}" type="text" />
+                    <input type="submit" value="Update" />
+                </form>
+            </td>
+            
+            <td><a href="" th:href="@{/accountsController/deleteAccount(id=${account.id})}">Delete Account</a></td>
+        </tr>
+        </tbody>
+    </table>
+	-->
+</div>
+
+<div class="container">
+	<form class="col card p-3 mb-5" th:method="post" th:action="@{'/accountsController/addUpdateAccount'}">
+		<div class="form-group">
+			<label for="name">Account Name</label>
+			<input class="form-control" name="name" placeholder="Enter Account Name" value="" type="text" />
+		</div>
+		<div class="form-group">
+			<label for="number">Account Number</label>
+			<input class="form-control" name="number" placeholder="Enter Account Number" value="" type="text" />
+		</div>
+		<div class="form-group">
+			<label for="description">Account Description</label>
+			<input class="form-control" name="description" placeholder="Enter Account Description" value="" type="text" />
+		</div>
+		<input class="btn btn-primary" type="submit" value="Save Account" />
+	</form>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html th:fragment="header (template, menu)">
+<head>
+    <title>Investment Tracker</title>
+    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
+</head>
+
+<body class="container">
+    <nav class="navbar navbar-default navbar-static-top navbar-inverse">
+        <div class="container">
+            <ul class="nav navbar-nav">
+                <li class="active">
+                    <a href="/"><span class="glyphicon glyphicon-home"></span> Home</a>
+                </li>
+                <li>
+                    <a href="/accountsController/accounts"><span class="glyphicon glyphicon-user"></span>Accounts</a>
+                </li>
+                <li>
+                    <a href="/bills"><span class="glyphicon glyphicon-user"></span> Bills</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="active">
+                    <a href="https://www.linkedin.com/in/simonbrummer/" target="_blank"><span class="glyphicon glyphicon-book"></span> Simon Brummer</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div th:replace="${template}"/>
+
+</body>
