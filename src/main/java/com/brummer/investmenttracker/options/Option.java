@@ -1,4 +1,4 @@
-package com.brummer.investmenttracker.trades;
+package com.brummer.investmenttracker.options;
 
 import java.sql.Date;
 
@@ -19,7 +19,7 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Trade {
+public class Option {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -39,6 +39,14 @@ public class Trade {
 	
 	@Column(name = "quantity")
 	private Float quantity;
+	
+	@NotEmpty(message = "Strike Price cannot be empty.")
+	@Column(name = "strike_price")
+	private Float strikePrice;
+	
+	@NotEmpty(message = "Expiration Date cannot be empty.")
+	@Column(name = "expiration_date")
+	private Date expirationDate;
 	
 	@Column(name = "date_acquired")
 	private Date dateAcquired;

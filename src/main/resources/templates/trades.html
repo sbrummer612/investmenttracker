@@ -16,12 +16,21 @@
 	
 	<h1>Trades</h1>
 	<h2></h2>
+	
+	<div>Select Account</div>
+	<form th:method="post" th:action="tradesByAccount" th:object="${selectedAccount}"> 
+	<select class="form-control" id="accountDropdownList" name="selectedAccount" onchange="this.form.submit()"  >
+		<option value="">Select Account</option>
+		<option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}" th:selected="${session.selectedAccount?.id == account.id}" ></option>
+	</select>
+	</form>
 
     <table class="table table-striped table-bordered">
 		<tr>
 			<td>Symbol</td>
 			<td>Description</td>
 			<td>Quantity</td>
+			<td>Account</td>
 			<td>Date Acquired</td>
 			<td>Date Sold</td>
 			<td>Proceeds</td>
@@ -31,12 +40,13 @@
 			<td>Action</td>
 		</tr>
 		<tr th:if="${#lists.isEmpty(trades)}">
-			<td colspan="9">No Trade found.</td>
+			<td colspan="10">No Trade found.</td>
 		</tr>
 		<tr th:each="trade : ${trades}">
 			<td th:text="${trade.symbol}"></td>
 			<td th:text="${trade.description}"></td>
 			<td th:text="${trade.quantity}"></td>
+			<td th:text="${trade.account?.name}"></td>
 			<td th:text="${trade.dateAcquired}"></td>
 			<td th:text="${trade.dateSold}"></td>
 			<td th:text="${trade.proceeds}"></td>
@@ -49,47 +59,65 @@
 	</table>	
 </div>
 <div th:if="${#ctx.containsVariable('trade')}" class="container">
-	<h2>Edit Trade</h2>
-	<form class="col card p-3 mb-5" th:method="post" th:action="@{'/tradeController/addUpdateTrade'}">
+	<h2>Add/Edit Trade</h2>
+	<form class="col card p-3 mb-5" th:method="post" onsubmit="disableDates(this);" th:object="${trade}" th:action="@{'/tradeController/addUpdateTrade'}">
 		<input name="id" th:value="${trade?.id}" type="hidden" />
 		<div class="form-group">
 			<label for="symbol">Symbol</label>
-			<input class="form-control" name="sumbol" placeholder="Enter Security Symbol" th:value="${trade.symbol}" type="text" />
+			<label class="text-danger" th:if="${#fields.hasErrors('symbol')}" th:errors="*{symbol}">Name Error</label>
+			<input class="form-control" name="symbol" placeholder="Enter Security Symbol" th:value="*{symbol}" type="text" />
 		</div>
 		<div class="form-group">
 			<label for="description">Description</label>
 			<input class="form-control" name="description" placeholder="Enter Security Description" th:value="${trade.description}" type="text" />
 		</div>
+		<!-- 
+		<div class="form-group">
+			<label for="account">Account</label>
+			<label class="text-danger" th:if="${#fields.hasErrors('account')}" th:errors="*{account}">Quantity Error</label>
+			<select class="form-control" id="accountDropdownList" name="account" th:field="${trade.account}">
+				<option value="">Select Account</option>
+				<option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}"></option>
+			</select>
+		</div>
+		-->
+		<div class="form-group">
+			<label for="account">Account</label>
+			<label class="form-group" th:value="${selectedAccount?.name}" ></label>
+			<div th:if="${session.containsKey('selectedAccount')}" th:text="${session.selectedAccount.name}"></div>
+			<input name="account" th:if="${session.containsKey('selectedAccount')}" th:value="${session.selectedAccount.id}" type="hidden" />
+		</div>
 		<div class="form-group">
 			<label for="quantity">Quantity</label>
-			<input class="form-control" name="quantity" placeholder="Enter Quantity" th:value="${trade.quantity}" type="text" />
+			<label class="text-danger" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}">Quantity Error</label>
+			<input class="form-control" name="quantity" placeholder="Enter Quantity" th:value="${trade.quantity}" type="number" />
 		</div>
 		<div class="form-group">
 			<label for="dateAcquired">Date Acquired</label>
-			<input class="form-control" name="dateAcquired" placeholder="Enter Date Acquired" th:value="${trade.dateAcquired}" type="text" />
+			<input class="form-control" name="dateAcquired" placeholder="Enter Date Acquired" th:field="*{dateAcquired}" type="date" />
 		</div>
 		<div class="form-group">
 			<label for="dateSold">Date Sold</label>
-			<input class="form-control" name="dateSold" placeholder="Enter Date Sold" th:value="${trade.dateSold}" type="text" />
+			<input class="form-control" name="dateSold" placeholder="Enter Date Sold" th:value="${trade.dateSold}" type="date" />
 		</div>
 		<div class="form-group">
 			<label for="proceeds">Proceeds</label>
-			<input class="form-control" name="proceeds" placeholder="Enter Proceeds" th:value="${trade.proceeds}" type="text" />
+			<input class="form-control" name="proceeds" placeholder="Enter Proceeds" th:value="${trade.proceeds}" type="number" />
 		</div>
 		<div class="form-group">
 			<label for="proceeds">Cost Basis</label>
-			<input class="form-control" name="costBasis" placeholder="Enter Cost Basis" th:value="${trade.costBasis}" type="text" />
+			<input class="form-control" name="costBasis" placeholder="Enter Cost Basis" th:value="${trade.costBasis}" type="number" />
 		</div>
 		<div class="form-group">
 			<label for="shortTermGain">Short Term Gain</label>
-			<input class="form-control" name="shortTermGain" placeholder="Enter Short Term Gain" th:value="${trade.shortTermGain}" type="text" />
+			<input class="form-control" name="shortTermGain" placeholder="Enter Short Term Gain" th:value="${trade.shortTermGain}" type="number" />
 		</div>
 		<div class="form-group">
 			<label for="longTermGain">Long Term Gain</label>
-			<input class="form-control" name="longTermGain" placeholder="Enter LongTerm Gain" th:value="${trade.longTermGain}" type="text" />
+			<input class="form-control" name="longTermGain" placeholder="Enter LongTerm Gain" th:value="${trade.longTermGain}" type="number" />
 		</div>
 		
-		<input class="btn btn-primary" type="submit" value="Update Trade" />
+		<input class="btn btn-primary" type="submit" value="Update Trade"/>
 		<input class="btn btn-primary" type="button" onclick="window.location.replace('/tradeController/trades')" value="Cancel" />
 	</form>
 </div>
@@ -106,10 +134,21 @@ function showNewTradeDiv() {
     y.innerHTML="Add New Trade";
   }
 }
+
+function disableDates(form) {
+	
+	var elements = form.elements;
+
+	for (var i = 0, element; element = elements[i++];) {
+	    if (element.type === "date" && element.value === "")
+	        element.disabled = true;
+	}
+	
+}
 </script>
 <div class="container" id="newTrade" style="display:none;">
 	<h2>Add New Trade</h2>
-	<form class="col card p-3 mb-5" th:method="post" th:action="@{'/tradeController/addUpdateTrade'}">
+	<form class="col card p-3 mb-5" th:method="post" onsubmit="disableDates(this);" th:action="@{'/tradeController/addUpdateTrade'}">
 		<div class="form-group">
 			<label for="symbol">Symbol</label>
 			<input class="form-control" name="symbol" placeholder="Enter Security Symbol" value="" type="text" />
@@ -118,13 +157,25 @@ function showNewTradeDiv() {
 			<label for="description">Description</label>
 			<input class="form-control" name="description" placeholder="Enter Security Description" value="" type="text" />
 		</div>
+		<!-- 
+		<div class="form-group">
+			<label for="account">Account</label>
+			<input class="form-control" name="account" placeholder="Enter Account" th:value="${trade?.account?.id}" type="text" />
+		</div>
+		-->
+		<div class="form-group">
+			<label for="account">Account</label>
+			<label class="form-group" th:value="${selectedAccount?.name}" ></label>
+			<div th:if="${session.containsKey('selectedAccount')}" th:text="${session.selectedAccount.name}"></div>
+			<input name="account" th:if="${session.containsKey('selectedAccount')}" th:value="${session.selectedAccount.id}" type="hidden" />
+		</div>
 		<div class="form-group">
 			<label for="quantity">Quantity</label>
-			<input class="form-control" name="quantity" placeholder="Enter Quantity" value="" type="text" />
+			<input class="form-control" name="quantity" placeholder="Enter Quantity" value="" type="number" />
 		</div>
 		<div class="form-group">
 			<label for="dateAcquired">Date Acquired</label>
-			<input class="form-control" name="dateAcquired" placeholder="Enter Date Acquired" value="" type="date" />
+			<input class="form-control" id="newDateAcquired" name="dateAcquired" placeholder="Enter Date Acquired" type="date" />
 		</div>
 		<div class="form-group">
 			<label for="dateSold">Date Sold</label>
@@ -132,24 +183,25 @@ function showNewTradeDiv() {
 		</div>
 		<div class="form-group">
 			<label for="proceeds">Proceeds</label>
-			<input class="form-control" name="proceeds" placeholder="Enter Proceeds" value="" type="text" />
+			<input class="form-control" name="proceeds" placeholder="Enter Proceeds" value="" type="number" />
 		</div>
 		<div class="form-group">
 			<label for="proceeds">Cost Basis</label>
-			<input class="form-control" name="costBasis" placeholder="Enter Cost Basis" value="" type="text" />
+			<input class="form-control" name="costBasis" placeholder="Enter Cost Basis" value="" type="number" />
 		</div>
 		<div class="form-group">
 			<label for="shortTermGain">Short Term Gain</label>
-			<input class="form-control" name="shortTermGain" placeholder="Enter Short Term Gain" value="" type="text" />
+			<input class="form-control" name="shortTermGain" placeholder="Enter Short Term Gain" value="" type="number" />
 		</div>
 		<div class="form-group">
 			<label for="longTermGain">Long Term Gain</label>
-			<input class="form-control" name="longTermGain" placeholder="Enter LongTerm Gain" value="" type="text" />
+			<input class="form-control" name="longTermGain" placeholder="Enter LongTerm Gain" value="" type="number" />
 		</div>
 		
 		<input class="btn btn-primary" type="submit" value="Save New Trade" />
 	</form>
 </div>
+
 <div class="container"><br>
 	<button class="btn btn-primary" id="newTradeButton" value="Add New Trade" onclick="showNewTradeDiv()">Add New Trade</button>
 </div>
