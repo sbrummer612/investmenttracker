@@ -84,7 +84,10 @@ public class TradeController {
 		if(tradeId != null) {
 			Long tradeIdLong = Long.valueOf(tradeId);
 			model.addAttribute("trade", tradeRepository.findById(tradeIdLong).get());
-			model.addAttribute("trades", tradeRepository.findAll());
+			Account account = (Account)request.getSession().getAttribute("selectedAccount");
+			if(account != null) {
+				model.addAttribute("trades", tradeRepository.findByAccount(account));
+			}
 			List<Account> accounts = accountRepository.findAll();
 			model.addAttribute("accounts", accounts);
 			model.addAttribute( "selectedAccount", request.getSession().getAttribute("selectedAccount") );
