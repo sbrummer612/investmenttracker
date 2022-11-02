@@ -1,6 +1,7 @@
 package com.brummer.investmenttracker.trades;
 
 import java.sql.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,10 +11,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.brummer.investmenttracker.accounts.Account;
+import com.brummer.investmenttracker.options.Option;
 
 import lombok.Data;
 
@@ -26,11 +29,12 @@ public class Trade {
 	private long id;
 	
 	@NotNull(message = "You must select an Account.")
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne()
 	@JoinColumn(name = "account_id")
 	private Account account;
 
 	@NotEmpty(message = "Symbol cannot be empty.")
+	@NotNull(message = "Symbol cannot be null.")
 	@Column(name = "symbol")
 	private String symbol;
 	
@@ -47,15 +51,18 @@ public class Trade {
 	private Date dateSold;
 	
 	@Column(name = "proceeds")
-	private Float proceeds;
+	private Double proceeds;
 	
 	@Column(name = "cost_basis")
-	private Float costBasis;
+	private Double costBasis;
 	
 	@Column(name = "short_term_gain")
-	private Float shortTermGain;
+	private Double shortTermGain;
 	
 	@Column(name = "long_term_gain")
-	private Float longTermGain;
+	private Double longTermGain;
+	
+	@Transient
+	private List<Option> options;
 	
 }

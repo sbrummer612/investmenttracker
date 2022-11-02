@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.brummer.investmenttracker.accounts.Account;
 import com.brummer.investmenttracker.accounts.AccountRepository;
@@ -27,7 +26,7 @@ public class TradeController {
 	private final TradeRepository tradeRepository;
 	private final AccountRepository accountRepository;
 	private final OptionRepository optionRepository;
-	private final String redirect = "redirect:/tradeController/trades";
+	private final String redirect = "redirect:/tradeController/tradeSummary";
 	
 	public TradeController(TradeRepository tradeRepository, AccountRepository accountRepository, OptionRepository optionRepository) {
 		this.tradeRepository = tradeRepository;
@@ -40,25 +39,27 @@ public class TradeController {
 		
 		model.addAttribute("accounts", accountRepository.findAll());
 		request.getSession().setAttribute("selectedAccount", account );
-		model.addAttribute("trades", tradeRepository.findByAccount(account));
+		List<Trade> trades = tradeRepository.findByAccount(account);
+		for(Trade trade : trades) {
+			trade.setOptions(optionRepository.findByAccountAndOptionSymbol(account, trade.getSymbol()));
+		}
+		model.addAttribute("trades", trades);
 		
 		return "trades";
 	}
 	
-	@RequestMapping("/trades")
+	@RequestMapping("/tradeSummary")
 	public String trades(Model model, HttpServletRequest request) {
 		model.addAttribute("accounts", accountRepository.findAll());
 		Account account = (Account)request.getSession().getAttribute("selectedAccount");
 		if(account != null) {
 			model.addAttribute("trades", tradeRepository.findByAccount(account));
 		}
-//		model.addAttribute("trades", tradeRepository.findAll());
-//		model.addAttribute("options", optionRepository.findAll());
 		return "trades";
 	}
 	
 	@PostMapping("/addUpdateTrade")
-	public String addTrade(@Valid @ModelAttribute Trade trade, @ModelAttribute("selectedAccount") Account account, BindingResult bindingResult, Model model) {
+	public String addTrade(@Valid Trade trade, BindingResult bindingResult, @ModelAttribute("selectedAccount") Account account, Model model) {
 		if(bindingResult.hasErrors()) {
 			model.addAttribute("trades", tradeRepository.findAll());
 			model.addAttribute("accounts", accountRepository.findAll());

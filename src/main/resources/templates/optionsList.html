@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	th:replace="~{fragments/header :: header (~{::body},'db')}">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Trades</title>
+</head>
+<body class="container">
+<div class="container">
+	
+	<h1>Options</h1>
+	<h2></h2>
+	
+	<div>Select Account</div>
+	<form th:method="post" th:action="options" th:object="${selectedAccount}"> 
+		<select class="form-control" id="accountDropdownList" name="selectedAccount" onchange="this.form.submit()"  >
+			<option value="1">Select Account</option>
+			<option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}" th:selected="${session.selectedAccount?.id == account.id}" ></option>
+		</select>
+		<label class="alert alert-warning" th:if="${#ctx.containsVariable('accountSelectionErrort')}" th:text="${accountSelectionErrort}">error</label>
+	</form>
+	<table class="table table-striped table-bordered">
+		<tr>
+			<th>Underlying Symbol</th>
+			<th>Option Symbol</th>
+			<th>Description</th>
+			<th>Quantity</th>
+			<th>Strike Price</th>
+			<th>Expiration Date</th>
+			<th>Account</th>
+			<th>Date Acquired</th>
+			<th>Date Sold</th>
+			<th>Proceeds</th>
+			<th>Cost Basis</th>
+			<th>Short Term Gain/Loss</th>
+			<th>Long Term Gain/Loss</th>
+			<th>Action</th>
+		</tr>
+		<tr th:if="${#lists.isEmpty(options)}">
+			<td colspan="10">No Options found.</td>
+		</tr>
+		<tr th:each="option : ${options}">
+			<td th:text="${option.symbol}"></td>
+			<td th:text="${option.optionSymbol}"></td>
+			<td th:text="${option.description}"></td>
+			<td th:text="${option.quantity}"></td>
+			<td th:text="${option.strikePrice}"></td>
+			<td th:text="${option.expirationDate}"></td>
+			<td th:text="${option.account?.name}"></td>
+			<td th:text="${option.dateAcquired}"></td>
+			<td th:text="${option.dateSold}"></td>
+			<td th:text="${option.proceeds}"></td>
+			<td th:text="${option.costBasis}"></td>
+			<td th:text="${option.shortTermGain}"></td>
+			<td th:text="${option.longTermGain}"></td>
+			<td><a href="" th:href="@{/optionEditController/editOption(id=${option.id})}">Edit Option</a> | 
+			<a href="" th:href="@{/optionEditController/deleteOption(id=${option.id})}">Delete Option</a></td>
+		</tr>
+	</table>
+</div>
+<div class="container"><br>
+	<button class="btn btn-primary" id="newOptionButton" value="Add New Option" onclick="window.location.replace('/optionEditController/addOption')">Add New Option</button>
+</div>
+</body>
+</html>

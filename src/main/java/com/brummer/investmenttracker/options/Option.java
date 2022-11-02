@@ -2,7 +2,6 @@ package com.brummer.investmenttracker.options;
 
 import java.sql.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,6 +11,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.validation.constraints.NotBlank;
 
 import com.brummer.investmenttracker.accounts.Account;
 
@@ -26,7 +29,7 @@ public class Option {
 	private long id;
 	
 	@NotNull(message = "You must select an Account.")
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne()
 	@JoinColumn(name = "account_id")
 	private Account account;
 
@@ -34,17 +37,21 @@ public class Option {
 	@Column(name = "symbol")
 	private String symbol;
 	
+	@NotEmpty(message = "Option Symbol cannot be empty.")
+	@Column(name = "option_symbol")
+	private String optionSymbol;
+	
 	@Column(name = "description")
 	private String description;
 	
 	@Column(name = "quantity")
-	private Float quantity;
+	private Double quantity;
 	
-	@NotEmpty(message = "Strike Price cannot be empty.")
+	@NotNull(message = "Strike Price cannot be empty.")
 	@Column(name = "strike_price")
-	private Float strikePrice;
+	private Double strikePrice;
 	
-	@NotEmpty(message = "Expiration Date cannot be empty.")
+	@NotNull(message = "Expiration Date cannot be empty.")
 	@Column(name = "expiration_date")
 	private Date expirationDate;
 	
@@ -55,15 +62,15 @@ public class Option {
 	private Date dateSold;
 	
 	@Column(name = "proceeds")
-	private Float proceeds;
+	private Double proceeds;
 	
 	@Column(name = "cost_basis")
-	private Float costBasis;
+	private Double costBasis;
 	
 	@Column(name = "short_term_gain")
-	private Float shortTermGain;
+	private Double shortTermGain;
 	
 	@Column(name = "long_term_gain")
-	private Float longTermGain;
+	private Double longTermGain;
 	
 }

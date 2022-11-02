@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	th:replace="~{fragments/header :: header (~{::body},'db')}">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Options</title>
+        
+
+    
+</head>
+<body class="container">
+
+<div th:if="${#ctx.containsVariable('option')}" class="container">
+	<h2>Add/Edit Option</h2>
+	<form class="col card p-3 mb-5" th:method="post" onsubmit="disableDates(this);" th:object="${option}" th:action="@{'/optionEditController/addUpdateOption'}">
+		<input name="id" th:value="${option?.id}" type="hidden" />
+		<div class="form-group">
+			<label for="symbol">Symbol</label>
+			<label class="alert alert-warning" th:if="${#fields.hasErrors('symbol')}" th:errors="*{symbol}">Name Error</label>
+			<input class="form-control" name="symbol" placeholder="Enter Security Symbol" th:value="*{symbol}" type="text" />
+		</div>
+		<div class="form-group">
+			<label for="optionSymbol">Option Symbol</label>
+			<label class="text-danger" th:if="${#fields.hasErrors('optionSymbol')}" th:errors="*{optionSymbol}">Name Error</label>
+			<input class="form-control" name="optionSymbol" placeholder="Enter Option Symbol" th:value="*{optionSymbol}" type="text" />
+		</div>
+		<div class="form-group">
+			<label for="description">Description</label>
+			<input class="form-control" name="description" placeholder="Enter Security Description" th:value="*{description}" type="text" />
+		</div>
+		<div class="form-group">
+			<label for="account">Account</label>
+			<label class="form-group" th:value="${selectedAccount?.name}" ></label>
+			<div th:if="${session.containsKey('selectedAccount')}" th:text="${session.selectedAccount?.name}"></div>
+			<input name="account" th:if="${session.containsKey('selectedAccount')}" th:value="${session.selectedAccount?.id}" type="hidden" />
+		</div>
+		<div class="form-group">
+			<label for="quantity">Quantity</label>
+			<label class="text-danger" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}">Quantity Error</label>
+			<input class="form-control" name="quantity" placeholder="Enter Quantity" th:value="*{quantity}" step="0.001" type="number" />
+		</div>
+		<div class="form-group">
+			<label for="quantity">Strike Price</label>
+			<label class="text-danger" th:if="${#fields.hasErrors('strikePrice')}" th:errors="*{strikePrice}">Strike Price Error</label>
+			<input class="form-control" name="strikePrice" placeholder="Enter Strike Price" th:value="*{strikePrice}" step="0.001" type="number" />
+		</div>
+		<div class="form-group">
+			<label for="expirationDate">Expiration Date</label>
+			<label class="alert alert-warning" th:if="${#fields.hasErrors('expirationDate')}" th:errors="*{expirationDate}">Expiration Date Error</label>
+			<input class="form-control" name="expirationDate" placeholder="Enter Expiration Date" th:value="*{expirationDate}" type="date" />
+		</div>
+		<div class="form-group">
+			<label for="dateAcquired">Date Acquired</label>
+			<input class="form-control" name="dateAcquired" placeholder="Enter Date Acquired" th:field="*{dateAcquired}" type="date" />
+		</div>
+		<div class="form-group">
+			<label for="dateSold">Date Sold</label>
+			<input class="form-control" name="dateSold" placeholder="Enter Date Sold" th:value="*{dateSold}" type="date" />
+		</div>
+		<div class="form-group">
+			<label for="proceeds">Proceeds</label>
+			<input class="form-control" name="proceeds" placeholder="Enter Proceeds" th:value="*{proceeds}" step="0.001" type="number" />
+		</div>
+		<div class="form-group">
+			<label for="proceeds">Cost Basis</label>
+			<input class="form-control" name="costBasis" placeholder="Enter Cost Basis" th:value="*{costBasis}" step="0.001" type="number" />
+		</div>
+		<div class="form-group">
+			<label for="shortTermGain">Short Term Gain</label>
+			<input class="form-control" name="shortTermGain" placeholder="Enter Short Term Gain" th:value="*{shortTermGain}" step="0.001" type="number" />
+		</div>
+		<div class="form-group">
+			<label for="longTermGain">Long Term Gain</label>
+			<input class="form-control" name="longTermGain" placeholder="Enter LongTerm Gain" th:value="*{longTermGain}" step="0.001" type="number" />
+		</div>
+		
+		<input class="btn btn-primary" type="submit" value="Update Option"/>
+		<input class="btn btn-primary" type="button" onclick="history.back()" value="Cancel" />
+	</form>
+</div>
+	
+</body>
+</html>
