@@ -65,6 +65,23 @@ public class OptionEditController {
 		return redirect;
 	}
 	
+	@GetMapping("/deleteOption")
+	public String deleteOption(@RequestParam String id) {
+		if(id!=null) {
+			Long idLong = Long.parseLong(id);
+			optionRepository.deleteById(idLong);
+		}
+		return redirect;
+	}
+	
+	@GetMapping("/deleteAllOptions")
+	public String deleteAllOptions() {
+		
+		optionRepository.deleteAll();
+		
+		return redirect;
+	}
+	
 	private void populate(Model model, Account account, HttpServletRequest request) {
 		model.addAttribute("accounts", accountRepository.findAll());
 		if(account == null || account.getId() == 0) {

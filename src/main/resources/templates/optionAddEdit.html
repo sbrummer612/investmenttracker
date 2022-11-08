@@ -54,6 +54,7 @@
 		</div>
 		<div class="form-group">
 			<label for="dateAcquired">Date Acquired</label>
+			<label class="alert alert-warning" th:if="${#fields.hasErrors('dateAcquired')}" th:errors="*{dateAcquired}">Date Acquired Error</label>
 			<input class="form-control" name="dateAcquired" placeholder="Enter Date Acquired" th:field="*{dateAcquired}" type="date" />
 		</div>
 		<div class="form-group">
@@ -66,6 +67,7 @@
 		</div>
 		<div class="form-group">
 			<label for="proceeds">Cost Basis</label>
+			<label class="alert alert-warning" th:if="${#fields.hasErrors('costBasis')}" th:errors="*{costBasis}">Cost Basis Error</label>
 			<input class="form-control" name="costBasis" placeholder="Enter Cost Basis" th:value="*{costBasis}" step="0.001" type="number" />
 		</div>
 		<div class="form-group">
@@ -76,9 +78,10 @@
 			<label for="longTermGain">Long Term Gain</label>
 			<input class="form-control" name="longTermGain" placeholder="Enter LongTerm Gain" th:value="*{longTermGain}" step="0.001" type="number" />
 		</div>
-		
+		<div class="row g-3">
 		<input class="btn btn-primary" type="submit" value="Update Option"/>
 		<input class="btn btn-primary" type="button" onclick="history.back()" value="Cancel" />
+		</div>
 	</form>
 </div>
 	

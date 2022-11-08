@@ -8,7 +8,7 @@ import com.brummer.investmenttracker.accounts.Account;
 
 public interface OptionRepository extends JpaRepository<Option, Long>{
 
-	List<Option> findByAccountAndOptionSymbol(Account account, String symbol);
+	List<Option> findByAccountAndSymbolAndOptionTypeOrderByExpirationDateDesc(Account account, String symbol, String optionType);
 	
 	List<Option> findByAccount(Account account);
 	

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	th:replace="~{fragments/header :: header (~{::body},'db')}">
+<head>
+    <title>Trade Summaries</title>
+    
+</head>
+<body class="container">
+<div class="container">
+	
+	<h1>Trades</h1>
+	<h2></h2>
+	
+	<!-- 
+	<div class="dropdown">
+	  <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" onchange="this.form.submit() ">
+	    Select Account
+	  </button>
+	  <ul class="dropdown-menu">
+	  	<th:block th:each="account : ${accounts}">
+	  		<li><a class="dropdown-item" href="" th:href="@{/tradeSummaryController/tradesByAccountGet(selectedAccount=${account.id})}"><label th:text="${account.name}"></label></a></li>
+	  	</th:block>
+	  </ul>
+	</div>
+	
+	<label th:text="'Account:' +${selectedAccount?.name}"></label>
+	-->
+	
+	<div>Select Account</div>
+	<div class="row g-3">
+		<form th:method="post" th:action="tradesByAccount" th:object="${selectedAccount}"> 
+			<div class="col-sm-3">
+				<select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example" id="accountDropdownList" name="selectedAccount" onchange="this.form.submit()"  >
+					<option value="">Select Account</option>
+					<option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}" th:selected="${session.selectedAccount?.id == account.id}" ></option>
+				</select>
+			</div>
+			<div class="col-sm-3">
+				<input class="btn btn-primary" type="button" onclick="window.location.replace('/optionImportController/importOptions')" value="Import Option Trades" />
+			</div>
+		<div class="col-sm">
+		</div>
+		</form>
+	</div>
+	<div>
+		<table class="table table-bordered">
+			<tr>
+				<th>Symbol</th>
+				<th>Description</th>
+				<th>Quantity</th>
+				<th>Account</th>
+				<th>Date Acquired</th>
+				<th>Date Sold</th>
+				<th>Proceeds</th>
+				<th>Cost Basis</th>
+				<th>Adj Cost Basis</th>
+				<!-- 
+				<th>Short Term Gain/Loss</th>
+				<th>Long Term Gain/Loss</th>
+				-->
+			</tr>
+			<tr th:if="${#lists.isEmpty(trades)}" >
+				<td colspan="9">No Trade found.</td>
+			</tr>
+			<th:block th:each="trade : ${trades}">
+				
+				<tr>
+					<td th:text="${trade.symbol}"></td>
+					<td th:text="${trade.description}"></td>
+					<td th:text="${trade.quantity}"></td>
+					<td th:text="${trade.account?.name}"></td>
+					<td th:text="${trade.dateAcquired}"></td>
+					<td th:text="${trade.dateSold}"></td>
+					<td th:text="${trade.proceeds}"></td>
+					<td th:text="${trade.costBasis}"></td>
+					<td th:text="${trade.adjustedCostBasis}"></td>
+					<!-- 
+					<td th:text="${trade.shortTermGain}"></td>
+					<td th:text="${trade.longTermGain}"></td>
+					-->
+				</tr>
+				<tr>
+					<td colspan="11">
+						<table class="table table-striped table-bordered">
+							<tr th:if="${#lists.isEmpty(trade.options)}" >
+								<td colspan="10">No Options Found.</td>
+							</tr>
+							<tr th:if="${!#lists.isEmpty(trade.options)}" >
+								<!-- <td>Account</td>-->
+								<!-- <td>Symbol</td> -->
+								<td>Option Symbol</td>
+								<td>Expiration Date</td>
+								<td>Strike Price</td>
+								<!-- <td>Description</td>-->
+								<td>Quantity</td>
+								<td>Date Acquired</td>
+								<td>Proceeds</td>
+								<td>Date Sold</td>
+								<td>Cost Basis</td>
+								<td>Total Profit</td>
+								
+								
+								<!-- 
+								<td>Short Term Gain/Loss</td>
+								<td>Long Term Gain/Loss</td>
+								-->
+								<td>Return</td>
+								<td>Annualized return</td>
+								<!-- 
+								<td>Ret w/up side</td>
+								<td>Ret w/up side annualized</td>
+								-->
+							</tr>
+							<tr th:each="option : ${trade.options}">
+								<!--  <td th:text="${option.account?.name}"></td> -->
+								<!--  <td th:text="${option.symbol}"></td> -->
+								<td th:text="${option.optionSymbol}"></td>
+								<td th:text="${option.expirationDate}"></td>
+								<td th:text="${#numbers.formatCurrency(option.strikePrice)}"></td>
+								<!--  <td th:text="${option.description}"></td> -->
+								<td th:text="${option.quantity}"></td>
+								<td th:text="${option.dateAcquired}"></td>
+								<td th:text="${#numbers.formatCurrency(option.proceeds)}"></td>
+								<td th:text="${option.dateSold}"></td>
+								<td th:text="${#numbers.formatCurrency(option.costBasis)}"></td>
+								<td th:text="${#numbers.formatCurrency(option.totalProfit)}"></td> 
+								<!-- 
+								<td th:text="${#numbers.formatCurrency(option.shortTermGain)}"></td>
+								<td th:text="${#numbers.formatCurrency(option.longTermGain)}"></td>
+								-->
+								<td th:text="${#numbers.formatPercent(option.returnPercentage,2,2)}"></td>
+								<td th:text="${#numbers.formatPercent(option.returnPercentageAnnualized,2,2)}"></td>
+								<!-- 
+								<td th:text="${#numbers.formatPercent(option.returnPercentageWithUpside,2,2)}"></td>
+								<td th:text="${#numbers.formatPercent(option.returnPercentageWithUpsideAnnualized,2,2)}"></td>
+								-->
+								<!-- 
+								<td><a href="" th:href="@{/tradeController/editTrade(id=${option.id})}">Edit Option</a> | 
+								<a href="" th:href="@{/tradeController/deleteTrade(id=${option.id})}">Delete Option</a></td>
+								-->
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</th:block>
+		</table>
+	</div>
+</div>
+</body>
+</html>

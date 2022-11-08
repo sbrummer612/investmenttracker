@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -51,6 +52,10 @@ public class Option {
 	@Column(name = "expiration_date")
 	private Date expirationDate;
 	
+	@Column(name = "optionType")
+	private String optionType;
+	
+	@NotNull(message = "Date Acquired cannot be empty.")
 	@Column(name = "date_acquired")
 	private Date dateAcquired;
 	
@@ -60,6 +65,7 @@ public class Option {
 	@Column(name = "proceeds")
 	private Double proceeds;
 	
+	@NotNull(message = "Cost Basis cannot be blank.")
 	@Column(name = "cost_basis")
 	private Double costBasis;
 	
@@ -68,5 +74,20 @@ public class Option {
 	
 	@Column(name = "long_term_gain")
 	private Double longTermGain;
+	
+	@Transient
+	private Double totalProfit;
+	
+	@Transient
+	private Double returnPercentage;
+	
+	@Transient
+	private Double returnPercentageAnnualized;
+	
+	@Transient
+	private Double returnPercentageWithUpside;
+	
+	@Transient
+	private Double returnPercentageWithUpsideAnnualized;
 	
 }

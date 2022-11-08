@@ -3,7 +3,6 @@ package com.brummer.investmenttracker.trades;
 import java.sql.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -61,6 +60,9 @@ public class Trade {
 	
 	@Column(name = "long_term_gain")
 	private Double longTermGain;
+	
+	@Transient
+	private Double adjustedCostBasis;
 	
 	@Transient
 	private List<Option> options;
