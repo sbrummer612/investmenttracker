@@ -38,6 +38,7 @@ public class TradeTransientFieldsTests {
 		option1.setCostBasis(Double.valueOf("25.00"));
 		option1.setQuantity(1.00000);
 		option1.setStrikePrice(390.0);
+		option1.setOptionType("C");
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 		java.util.Date dateSold = sdf.parse("11/01/2022");
@@ -74,6 +75,7 @@ public class TradeTransientFieldsTests {
 		option1.setCostBasis(Double.valueOf("25.00"));
 		option1.setQuantity(1.00000);
 		option1.setStrikePrice(390.0);
+		option1.setOptionType("C");
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
 		
