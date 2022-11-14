@@ -41,7 +41,7 @@ public class TradeController {
 		request.getSession().setAttribute("selectedAccount", account );
 		List<Trade> trades = tradeRepository.findByAccount(account);
 		for(Trade trade : trades) {
-			trade.setOptions(optionRepository.findByAccountAndSymbolAndOptionTypeOrderByExpirationDateDesc(account, trade.getSymbol(), "C"));
+			trade.setOptions(optionRepository.findByAccountAndSymbolAndOptionTypeOrderByDateSoldDesc(account, trade.getSymbol(), "C"));
 		}
 		model.addAttribute("trades", trades);
 		

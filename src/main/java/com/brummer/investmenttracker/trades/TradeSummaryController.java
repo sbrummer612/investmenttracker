@@ -1,21 +1,20 @@
 package com.brummer.investmenttracker.trades;
 
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.brummer.investmenttracker.accounts.Account;
 import com.brummer.investmenttracker.accounts.AccountRepository;
 import com.brummer.investmenttracker.options.OptionRepository;
+import com.brummer.investmenttracker.options.OptionType;
 
 @Controller
 @RequestMapping("/tradeSummaryController")
@@ -36,7 +35,7 @@ public class TradeSummaryController {
 	
 	@RequestMapping("/tradeSummary")
 	public String tradeSummary(Model model, HttpServletRequest request) {
-		populate(model, null, request);
+		populate(model, null, null, request);
 		return "tradesSummary";
 	}
 	
@@ -54,26 +53,46 @@ public class TradeSummaryController {
 	@PostMapping("/tradesByAccount")
 	public String tradesByAccount(@ModelAttribute("selectedAccount") Account account, Model model, HttpServletRequest request) {
 		
-		populate(model, account, request);
+		populate(model, account, null, request);
 		return "tradesSummary";
 	}
 	
-	private void populate(Model model, Account account, HttpServletRequest request) {
+	@PostMapping("/tradesByOptionType")
+	public String tradesByOptionType(@ModelAttribute("selectedOptionType") OptionType optionType, Model model, HttpServletRequest request) {
+		
+		populate(model, null, optionType, request);
+		return "tradesSummary";
+	}
+	
+	private void populate(Model model, Account account, OptionType optionType, HttpServletRequest request) {
 		model.addAttribute("accounts", accountRepository.findAll());
 		if(account == null || account.getId() == 0) {
 			account = (Account)request.getSession().getAttribute("selectedAccount");
 		}
 		
+		EnumSet.allOf(OptionType.class);
+		model.addAttribute("optionTypes", EnumSet.allOf(OptionType.class));
+		if(optionType == null) {
+			optionType = (OptionType) request.getSession().getAttribute("selectedOptionType");
+		}
+		
+		if(optionType != null) {
+			request.getSession().setAttribute("selectedOptionType", optionType);
+			model.addAttribute("selectedOptionType", "optionType");
+		}
+		
 		if(account != null && account.getId() != 0) {
+			
 			request.getSession().setAttribute("selectedAccount", account);
 			model.addAttribute("selectedAccount", account);
 			List<Trade> trades = tradeRepository.findByAccount(account);
 			final Account tAccount = account;
+			final OptionType tOptionType = (optionType != null) ? optionType : OptionType.ALL;
 			trades
 				.forEach(
 						trade -> 
 							trade.setOptions(
-									optionRepository.findByAccountAndSymbolAndOptionTypeOrderByExpirationDateDesc(tAccount, trade.getSymbol(), "C")
+									optionRepository.findByAccountAndSymbolAndOptionTypeOrderByDateSoldDesc(tAccount, trade.getSymbol(), tOptionType.getValue())
 							) 
 				);
 			tradeTransientFields.computeTransientFields(trades);

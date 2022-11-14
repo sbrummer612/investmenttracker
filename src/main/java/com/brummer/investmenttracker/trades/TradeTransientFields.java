@@ -23,14 +23,18 @@ public class TradeTransientFields {
 			for(Option option : trade.getOptions()) {
 				
 				if(option.getQuantity() > 0) {
-					if(option.getProceeds() != null) {
-						option.setTotalProfit( (option.getProceeds().doubleValue() - option.getCostBasis().doubleValue()) * option.getQuantity().doubleValue() );
+					if(option.getProceeds() != null && option.getProceeds().doubleValue() != 0.00) {
+						option.setTotalProfit( option.getProceeds().doubleValue() - option.getCostBasis().doubleValue() );
 					}
 					else {
-						option.setTotalProfit( option.getCostBasis().doubleValue() * option.getQuantity() );
+						option.setTotalProfit( option.getCostBasis().doubleValue() );
 					}	
 				
-					Double returnPercentage = option.getTotalProfit() / (option.getStrikePrice() * Math.abs(option.getQuantity()) );
+					Double totalProfit = option.getTotalProfit();
+					Double totalQuantity = option.getQuantity();
+					Double strikePrice = option.getStrikePrice();
+					
+					Double returnPercentage = ( (option.getTotalProfit() ) / (option.getStrikePrice() * option.getQuantity() ) );
 					option.setReturnPercentage(returnPercentage);
 					
 					Date endDate = null;

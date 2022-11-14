@@ -36,6 +36,19 @@
 				</select>
 			</div>
 			<div class="col-sm-3">
+			</div>
+		<div class="col-sm">
+		</div>
+		</form>
+	</div>
+	<div class="row g-3">
+		<form th:method="post" th:action="tradesByOptionType" th:object="${selectedOptionType}"> 
+			<div class="col-sm-3">
+				<select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example" id="optionTypeDropdownList" name="selectedOptionType" onchange="this.form.submit()"  >
+					<option th:each="optionType : ${optionTypes}" th:value="${optionType.type}" th:text="${optionType.typeName}" th:selected="${session.selectedOptionType?.type == optionType.type}" ></option>
+				</select>
+			</div>
+			<div class="col-sm-3">
 				<input class="btn btn-primary" type="button" onclick="window.location.replace('/optionImportController/importOptions')" value="Import Option Trades" />
 			</div>
 		<div class="col-sm">
