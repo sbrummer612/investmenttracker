@@ -58,10 +58,6 @@ public class OptionTransactionSummaryService {
 		 
 		ArrayList<OptionTransactionSummary> t = new ArrayList<OptionTransactionSummary>(map.values());
 		Collections.sort(t);
-//		Collections.reverse(t);
-//		t.sort(Comparator.comparing(OptionTransactionSummary::getDateAcquired).reversed());
-//		t.sort(Comparator.comparing(OptionTransactionSummary::getDateAcquired));
-//		Collections.sort(t, Comparator.comparing(OptionTransactionSummary::getDateAcquired));
 		return t;
 		
 	}
@@ -77,6 +73,7 @@ public class OptionTransactionSummaryService {
 		
 		if(optionTransactionSummary == null) {
 			optionTransactionSummary = new OptionTransactionSummary();	
+			optionTransactionSummary.setDateAcquired(transaction.getTransactionDate());
 		}
 		
 		if(optionTransactionSummary.getStockSymbol() == null || 

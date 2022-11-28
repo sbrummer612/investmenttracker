@@ -67,7 +67,6 @@ public class OptionTransactionSummary implements Comparable<OptionTransactionSum
 			return 0;	
 		}
 		
-//		return getDateAcquired().compareTo(o.getDateAcquired());
 		return o.getDateAcquired().compareTo(getDateAcquired());
 	}
 
