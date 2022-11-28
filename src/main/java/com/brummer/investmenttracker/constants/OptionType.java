@@ -1,4 +1,4 @@
-package com.brummer.investmenttracker.options;
+package com.brummer.investmenttracker.constants;
 
 //import java.util.EnumSet;
 //import java.util.HashMap;

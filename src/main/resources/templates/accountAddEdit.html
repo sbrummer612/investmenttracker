@@ -6,41 +6,13 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Accounts</title>
-    <link rel="stylesheet" href="../static/main.css" />
-    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
-        rel="stylesheet">
+    <title>Options</title>
+        
+
+    
 </head>
 <body class="container">
 
-<div class="container">
-	
-	<h1>Accounts</h1>
-	<h2></h2>
-
-    <table class="table table-striped table-bordered">
-		<tr>
-			<td>Account Name</td>
-			<td>Account Number</td>
-			<td>Account Description</td>
-			<td>Account Brokerage Type</td>
-			<td>Actions</td>
-			
-		</tr>
-		<tr th:if="${#lists.isEmpty(accounts)}">
-			<td colspan="5">No Accounts found.</td>
-		</tr>
-		<tr th:each="account : ${accounts}">
-			<td th:text="${account.name}"></td>
-			<td th:text="${account.number}"></td>
-			<td th:text="${account.description}"></td>
-			<td th:text="${account.brokerage}"></td>
-			<td><a href="" th:href="@{/accountsController/editAccount(id=${account.id})}">Edit Account</a> | 
-			<a href="" th:href="@{/accountsController/deleteAccount(id=${account.id})}">Delete Account</a></td>
-		</tr>
-	</table>	
-</div>
-<!-- 
 <div th:if="${#ctx.containsVariable('account')}" class="container">
 	<h2>Edit Account</h2>
 	<form class="col card p-3 mb-5" th:method="post" th:object="${account}" th:action="@{'/accountsController/addUpdateAccount'}">
@@ -58,14 +30,18 @@
 			<label for="description">Account Description</label>
 			<input class="form-control" name="description" placeholder="Enter Account Description" th:value="${account.description}" type="text" />
 		</div>
-		<input class="btn btn-primary" type="submit" value="Update Account" />
+		<div class="form-group">
+			<label for="description">Account Brokerage Type</label>
+			<select class="form-control" id="brokerageDropdownList" name="brokerage" >
+				<option value="">Select Brokerage Type</option>
+				<option th:each="brokerage : ${brokerages}" th:value="${brokerage.type}" th:text="${brokerage.name}" th:selected="${brokerage.type == account.brokerage}" ></option>
+			</select>
+		</div>
+		<label class="alert alert-warning" th:if="${#ctx.containsVariable('accountSelectionErrort')}" th:text="${accountSelectionErrort}">error</label>
+		<input class="btn btn-primary" type="submit" value="Add/Update Account" />
 		<input class="btn btn-primary" type="button" onclick="window.location.replace('/accountsController/accounts')" value="Cancel" />
 	</form>
 </div>
--->
-<div class="container"><br>
-	<button class="btn btn-primary" id="newAccountButton" value="Add New Account" onclick="window.location.replace('/accountsController/addAccount')">Add New Account</button>
-</div>
-
+	
 </body>
 </html>

@@ -9,12 +9,12 @@
 <body class="container">
 <div class="container">
 	
-	<h1>Import Option Trades</h1>
+	<h1>Import Options History</h1>
 	<h2></h2>
 	
 	<div>Select Account</div>
 	<div class="row g-3">
-		<form th:method="post" th:action="importOptions" th:object="${selectedAccount}"> 
+		<form th:method="post" th:action="importOptionsHistory" th:object="${selectedAccount}"> 
 			<div class="col-sm-3">
 				<select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example" id="accountDropdownList" name="selectedAccount" onchange="this.form.submit()"  >
 					<option value="">Select Account</option>
@@ -32,13 +32,12 @@
 	</div>
 
 	<div>
-		<form method="POST" enctype="multipart/form-data" action="/optionImportController/importOptionsFile">
+		<form method="POST" enctype="multipart/form-data" action="/optionImportController/importOptionsHistoryFile">
 			<table>
 				<tr><td>File to upload:</td><td><input type="file" name="file" /></td></tr>
 				<tr><td></td><td><input type="submit" value="Upload" /></td></tr>
 			</table>
 		</form>
 	</div>
-</div>
 </body>
 </html>	

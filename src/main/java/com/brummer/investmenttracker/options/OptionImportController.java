@@ -30,20 +30,77 @@ public class OptionImportController {
 	private final AccountRepository accountRepository;
 	private final OptionImportService optionImportService;
 	private final OptionRepository optionRepository;
-	private final String redirect = "redirect:/optionImportController/importOptions";
+	private final String redirect = "redirect:/optionImportController/importOptionsHistory";
 	
 	public OptionImportController(AccountRepository accountRepository, OptionImportService optionImportService, OptionRepository optionRepository) {
 		this.accountRepository = accountRepository;
 		this.optionImportService = optionImportService;
 		this.optionRepository = optionRepository;
 	}
+
+	@RequestMapping("/importOptionsHistory")
+	public String importOptionsHistory(@ModelAttribute("selectedAccount") Account account, Model model, HttpServletRequest request) {
+		populate(model, account, request);
+		return "optionImportHistory";
+	}
 	
+	@PostMapping("/importOptionsHistoryFile")
+	public String importOptionsHistoryFile(@ModelAttribute("selectedAccount") Account account, @RequestParam("file") MultipartFile multipartFile, 
+			RedirectAttributes redirectAttributes, HttpServletRequest request) throws IOException, ParseException {
+		
+		InputStream inputStream = multipartFile.getInputStream();
+		
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+		String line = reader.readLine();
+		while(line != null) {
+			Option option = optionImportService.handleLineHistory(line);
+			if(option != null) {
+				if(option.getExtendedDescription().indexOf("YOU SOLD OPENING TRANSACTION") > -1) {
+					ExampleMatcher matcher = 
+							ExampleMatcher.matching()
+								.withIgnorePaths("id", "description", "quantity", "dateAcquired", "dateSold", "proceeds", "shortTermGain", "longTermGain");
+					Example<Option> example = Example.of(option, matcher);
+					if(optionRepository.findAll(example).isEmpty()) {
+						// not found so create it
+						optionRepository.save(option);	
+					}
+				}
+				else if(option.getExtendedDescription().toUpperCase().indexOf("YOU BOUGHT CLOSING TRANSACTION") > -1 || 
+						option.getExtendedDescription().toUpperCase().indexOf("ASSIGNED") > -1 ||
+						option.getExtendedDescription().toUpperCase().indexOf("EXPIRED") > -1){
+					
+					ExampleMatcher matcher = 
+							ExampleMatcher.matching()
+								.withIgnorePaths("id", "description", "quantity", "dateAcquired", "dateSold", "proceeds", "costBasis", "shortTermGain", "longTermGain");
+					Example<Option> example = Example.of(option, matcher);
+					if(!optionRepository.findAll(example).isEmpty()) {
+						if(optionRepository.findAll(example).size() > 0) {
+							Option existingOption = optionRepository.findAll(example).get(0);
+							existingOption.setDateSold(option.getDateSold());
+							existingOption.setQuantity(existingOption.getQuantity() + option.getQuantity());
+							existingOption.setProceeds((existingOption.getProceeds() == null) ? option.getProceeds() : existingOption.getProceeds() + option.getProceeds());
+							existingOption.setShortTermGain(existingOption.getCostBasis() + option.getProceeds());
+							optionRepository.save(existingOption);
+						}
+					}
+					
+				}
+			}
+			line = reader.readLine();
+		}
+		reader.close();
+		
+		redirectAttributes.addFlashAttribute("message", "Import successful!");
+		
+		return redirect;
+	}
+
 	@RequestMapping("/importOptions")
 	public String importOptions(@ModelAttribute("selectedAccount") Account account, Model model, HttpServletRequest request) {
 		populate(model, account, request);
 		return "optionImport";
 	}
-
+	
 	@PostMapping("/importOptionsFile")
 	public String importOptionsFile(@ModelAttribute("selectedAccount") Account account, @RequestParam("file") MultipartFile multipartFile, 
 			RedirectAttributes redirectAttributes, HttpServletRequest request) throws IOException, ParseException {
@@ -55,13 +112,10 @@ public class OptionImportController {
 				return redirect;
 			}
 		}
-		
 		InputStream inputStream = multipartFile.getInputStream();
-		
 //		new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)
 //		                    .lines()
 //		                    .forEach(this::handleLine);
-		
 		ExampleMatcher matcher = 
 				ExampleMatcher.matching()
 					.withIgnorePaths("id");
@@ -85,6 +139,7 @@ public class OptionImportController {
 		
 		return redirect;
 	}
+	
 	
 	private void populate(Model model, Account account, HttpServletRequest request) {
 		model.addAttribute("accounts", accountRepository.findAll());

@@ -1,9 +1,13 @@
 package com.brummer.investmenttracker.web;
 
+import java.util.EnumSet;
 import java.util.Optional;
+
+import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.brummer.investmenttracker.accounts.Account;
 import com.brummer.investmenttracker.accounts.AccountRepository;
+import com.brummer.investmenttracker.constants.BrokerageTypes;
 
 @Controller
 @RequestMapping("/accountsController")
@@ -27,11 +32,24 @@ public class AccountsController {
 	@RequestMapping("/accounts")
 	public String accounts(Model model) {
 		model.addAttribute("accounts", accountRepository.findAll());
+		populate(model);
 		return "accounts";
 	}
 	
+	@GetMapping("/addAccount")
+	public String addAccount(Model model) {
+		model.addAttribute("account", new Account());
+		populate(model);
+		
+		return "accountAddEdit";
+	}
+	
 	@PostMapping("/addUpdateAccount")
-	public String addAccount(@ModelAttribute Account account) {
+	public String addAccount(@Valid @ModelAttribute Account account, BindingResult bindingResult, Model model) {
+		if(bindingResult.hasErrors()) {
+			populate(model);
+			return "accountAddEdit";
+		}
 		accountRepository.save(account);
 		return redirect;
 	}
@@ -51,9 +69,14 @@ public class AccountsController {
 			Long idLong = Long.parseLong(id);
 			Optional<Account> obj = accountRepository.findById(idLong);
 			model.addAttribute("account", obj.get());
-			model.addAttribute("accounts", accountRepository.findAll());
+			populate(model);
+//			model.addAttribute("accounts", accountRepository.findAll());
 		}
-		return "accounts";
+		return "accountAddEdit";
+	}
+	
+	private void populate(Model model) {
+		model.addAttribute("brokerages", EnumSet.allOf(BrokerageTypes.class));
 	}
 	
 }

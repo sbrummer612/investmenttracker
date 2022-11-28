@@ -90,4 +90,7 @@ public class Option {
 	@Transient
 	private Double returnPercentageWithUpsideAnnualized;
 	
+	@Transient
+	private String extendedDescription;
+	
 }

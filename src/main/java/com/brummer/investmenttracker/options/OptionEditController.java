@@ -90,7 +90,7 @@ public class OptionEditController {
 		
 		if(account != null && account.getId() != 0) {
 			request.getSession().setAttribute("selectedAccount", account);
-			model.addAttribute("options", optionRepository.findByAccount(account));
+			model.addAttribute("options", optionRepository.findByAccountOrderByExpirationDateDesc(account));
 		}
 	}
 	

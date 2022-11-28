@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.brummer.investmenttracker.accounts.Account;
 import com.brummer.investmenttracker.accounts.AccountRepository;
+import com.brummer.investmenttracker.constants.OptionType;
 import com.brummer.investmenttracker.options.OptionRepository;
-import com.brummer.investmenttracker.options.OptionType;
 
 @Controller
 @RequestMapping("/tradeSummaryController")
@@ -38,17 +38,6 @@ public class TradeSummaryController {
 		populate(model, null, null, request);
 		return "tradesSummary";
 	}
-	
-//	@GetMapping("tradesByAccountGet")
-//	public String tradesByAccountGet(@RequestParam("selectedAccount") String id, Model model, HttpServletRequest request) {
-//		Optional<Account> account = null;
-//		if(id != null) {
-//			account = accountRepository.findById(Long.valueOf(id));
-//		}
-//		populate(model, account.get(), request);
-//		
-//		return "tradesSummary";
-//	}
 	
 	@PostMapping("/tradesByAccount")
 	public String tradesByAccount(@ModelAttribute("selectedAccount") Account account, Model model, HttpServletRequest request) {
@@ -92,7 +81,7 @@ public class TradeSummaryController {
 				.forEach(
 						trade -> 
 							trade.setOptions(
-									optionRepository.findByAccountAndSymbolAndOptionTypeOrderByDateSoldDesc(tAccount, trade.getSymbol(), tOptionType.getValue())
+									optionRepository.findByAccountAndSymbolAndOptionTypeOrderByDateSoldDesc(tAccount, trade.getSymbol(), tOptionType.getType())
 							) 
 				);
 			tradeTransientFields.computeTransientFields(trades);

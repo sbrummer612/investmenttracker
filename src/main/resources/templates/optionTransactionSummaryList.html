@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" 
+	th:replace="~{fragments/header :: header (~{::body},'db')}">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Option Transaction Summaries</title>
+    <link rel="stylesheet" href="../static/main.css" />
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css"
+        rel="stylesheet">
+</head>
+<body class="container">
+
+<div class="container">
+	
+	<h1>Option Transaction Summaries</h1>
+	<h2></h2>
+	
+	<div>Select Account</div>
+	<form th:method="post" th:action="transactions" th:object="${selectedAccount}"> 
+		<select class="form-control" id="accountDropdownList" name="selectedAccount" onchange="this.form.submit()"  >
+			<option value="1">Select Account</option>
+			<option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}" th:selected="${selectedAccount?.id == account.id}" ></option>
+		</select>
+		<label class="alert alert-warning" th:if="${#ctx.containsVariable('accountSelectionErrort')}" th:text="${accountSelectionErrort}">error</label>
+	</form>
+	
+	<table class="table table-striped table-bordered">
+		<tr>
+			<td>Stock Symbol</td>
+			<td>Option Symbol</td>
+			<!-- 
+			<td>Account</td>
+			<td>Security Description</td>
+			-->
+			<td>Date Acquired</td>
+			<td>Expiration Date</td>
+			<td>Strike Price</td>
+			<td>Quantity</td>
+			<td>Cost Basis</td>
+			<td>Proceeds</td>
+			<td>Gain/Loss</td>
+			<td>Date Closed</td>
+			<td>Return %</td>
+			<td>Return % Annualized</td>
+		</tr>
+		<tr th:if="${#lists.isEmpty(transactionSummaries)}">
+			<td colspan="14">No Transactions Summaries found.</td>
+		</tr>
+		<tr th:each="transaction : ${transactionSummaries}">
+			<td th:text="${transaction.stockSymbol}"></td>
+			<td th:text="${transaction.optionSymbol}"></td>
+			<!-- 
+			<td th:text="${transaction.accountName}"></td>
+			<td th:text="${transaction.securityDescription}"></td>
+			-->
+			<td th:text="${transaction.dateAcquired}"></td>
+			<td th:text="${transaction.expirationDate}"></td>
+			<td th:text="'$'+${transaction.strikePrice}"></td>
+			<td th:class="${transaction.quantity < 0 ? 'p-3 mb-2 bg-danger text-white' : 'p-3 mb-2 bg-success text-white' }" th:text="${transaction.quantity}"></td>
+			<td th:text="'$'+${transaction.costBasis}"></td>
+			<td th:text="${transaction.proceeds} ? '$'+${transaction?.proceeds} : ${transaction?.proceeds}"></td>
+			<td th:class="${transaction.gainLoss < 0 ? 'p-3 mb-2 bg-danger text-white' : 'p-3 mb-2 bg-success text-white' }" th:text="'$'+${transaction.gainLoss}"></td>
+			<td th:text="${transaction.dateClosed}"></td>
+			<td th:class="${transaction.returnPercentage < 0 ? 'p-3 mb-2 bg-danger text-white' : 'p-3 mb-2 bg-success text-white' }" th:text="${transaction.returnPercentage} + '%'"></td>
+			<td th:class="${transaction.returnPercentageAnnualized < 0 ? 'p-3 mb-2 bg-danger text-white' : 'p-3 mb-2 bg-success text-white' }" th:text="${transaction.returnPercentageAnnualized} + '%'"></td>
+		</tr>
+	</table>
+
+</div>
+</body>
+</html>

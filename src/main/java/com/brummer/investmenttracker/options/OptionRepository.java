@@ -12,4 +12,6 @@ public interface OptionRepository extends JpaRepository<Option, Long>{
 	
 	List<Option> findByAccount(Account account);
 	
+	List<Option> findByAccountOrderByExpirationDateDesc(Account account);
+	
 }

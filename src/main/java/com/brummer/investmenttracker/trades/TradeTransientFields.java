@@ -30,9 +30,9 @@ public class TradeTransientFields {
 						option.setTotalProfit( option.getCostBasis().doubleValue() );
 					}	
 				
-					Double totalProfit = option.getTotalProfit();
-					Double totalQuantity = option.getQuantity();
-					Double strikePrice = option.getStrikePrice();
+//					Double totalProfit = option.getTotalProfit();
+//					Double totalQuantity = option.getQuantity();
+//					Double strikePrice = option.getStrikePrice();
 					
 					Double returnPercentage = ( (option.getTotalProfit() ) / (option.getStrikePrice() * option.getQuantity() ) );
 					option.setReturnPercentage(returnPercentage);

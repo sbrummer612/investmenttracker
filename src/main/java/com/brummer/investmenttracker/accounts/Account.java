@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
 
@@ -25,6 +26,8 @@ public class Account {
 	@Column(name = "number")
 	private String number;
 	
-	
+	@NotEmpty(message = "You must select a brokerage type or import won't work.")
+	@Column(name = "brokerage", nullable = false)
+	private String brokerage;
 	
 }
