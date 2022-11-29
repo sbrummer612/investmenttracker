@@ -68,9 +68,9 @@ public class OptionTransactionSummary implements Comparable<OptionTransactionSum
 				return -1;
 			}
 			if(o.getDateAcquired() == null) {
-				return 1;
+				return -1;
 			}
-			return -1;	
+			return 1;	
 //			return 0;	
 		}
 		

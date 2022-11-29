@@ -23,7 +23,7 @@ public class OptionTransactionSummaryService {
 		return transactions.stream().map(ots -> ots.getStockSymbol()).distinct().sorted().toList();
 	}
 	
-	public List<OptionTransactionSummary> summarizeTransactions(List<Transaction> transactions, TransactionStatusType transactionStatusType) throws ParseException {
+	public List<OptionTransactionSummary> summarizeTransactions(List<Transaction> transactions, TransactionStatusType transactionStatusType, String stockSymbol) throws ParseException {
 		
 		Map<String, OptionTransactionSummary> map = new HashMap<String, OptionTransactionSummary>();
 		
@@ -41,15 +41,33 @@ public class OptionTransactionSummaryService {
 		
 		if(transactionStatusType != null) {
 			if(transactionStatusType.getValue() == TransactionStatusType.CLOSED.getValue()) {
-				t = t.stream().filter(ots -> ots.getQuantity() == 0).sorted().collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );	
+				if(stockSymbol == null || "".equals(stockSymbol)) {
+					t = t.stream().filter(ots -> ots.getQuantity() == 0).collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );
+				}
+				else {
+					t = t.stream().filter(ots -> ots.getQuantity() == 0).filter(ots -> ots.getStockSymbol().equals(stockSymbol)).collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );
+				}
 			}
 			else if(transactionStatusType.getValue() == TransactionStatusType.OPEN.getValue()) {
-				t = t.stream().filter(ots -> ots.getQuantity() < 0).sorted().collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );
+				if(stockSymbol == null || "".equals(stockSymbol)) {
+					t = t.stream().filter(ots -> ots.getQuantity() < 0).collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );
+				}
+				else {
+					t = t.stream().filter(ots -> ots.getQuantity() < 0).filter(ots -> ots.getStockSymbol().equals(stockSymbol)).collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );
+				}
 			}
 			else {
-				Collections.sort(t);	
+				if(stockSymbol == null || "".equals(stockSymbol)) {
+					t = t.stream().collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new));
+				}
+				else {
+					t = t.stream().filter(ots -> ots.getStockSymbol().equals(stockSymbol)).collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new));
+				}
+
 			}				
 		}
+		
+		Collections.sort(t);
 		
 		return t;
 		
@@ -66,7 +84,6 @@ public class OptionTransactionSummaryService {
 		
 		if(optionTransactionSummary == null) {
 			optionTransactionSummary = new OptionTransactionSummary();	
-//			optionTransactionSummary.setDateAcquired(transaction.getTransactionDate());
 		}
 		
 		if(optionTransactionSummary.getStockSymbol() == null || 

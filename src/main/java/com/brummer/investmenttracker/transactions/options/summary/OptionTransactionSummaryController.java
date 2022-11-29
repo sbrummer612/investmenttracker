@@ -33,26 +33,40 @@ public class OptionTransactionSummaryController {
 	
 	@RequestMapping("/transactions")
 	public String transactions(@ModelAttribute("selectedAccount") Account account, Model model, HttpServletRequest request) throws ParseException {
-		populate(account, null, model, request);
+		populate(account, null, null, model, request);
 		return "optionTransactionSummaryList";
 	}
 	
 	@RequestMapping("/transactionsByStatus")
 	public String transactionsByStatus(@ModelAttribute("selectedTransactionStatusType") TransactionStatusType transactionStatusType, Model model, HttpServletRequest request) throws ParseException {
-		populate(null, transactionStatusType, model, request);
+		populate(null, transactionStatusType, null, model, request);
 		return "optionTransactionSummaryList";
 	}
 	
-	private void populate(Account account, TransactionStatusType transactionStatusType, Model model, HttpServletRequest request) throws ParseException {
+	@RequestMapping("/transactionsBySymbol")
+	public String transactionsBySymbol(@ModelAttribute("selectedTransactionSymbol") String stockSymbol, Model model, HttpServletRequest request) throws ParseException {
+		populate(null, null, stockSymbol, model, request);
+		return "optionTransactionSummaryList";
+	}
+	
+	private void populate(Account account, TransactionStatusType transactionStatusType, String stockSymbol, Model model, HttpServletRequest request) throws ParseException {
 		model.addAttribute("accounts", accountRepository.findAll());
 		model.addAttribute("transactionStatusTypes", EnumSet.allOf(TransactionStatusType.class));
 		
-		if(account == null || account.getId() == 0) {
+		if(account == null) {
 			account = (Account)request.getSession().getAttribute("selectedAccount");
+		}
+		else if(account.getId() == 0) {
+			request.getSession().removeAttribute("selectedTransactionStatusType");
+			request.getSession().removeAttribute("selectedTransactionSymbol");
 		}
 		
 		if(transactionStatusType == null) {
 			transactionStatusType = (TransactionStatusType)request.getSession().getAttribute("selectedTransactionStatusType");
+		}
+		
+		if(stockSymbol == null) {
+			stockSymbol = (String) request.getSession().getAttribute("selectedTransactionSymbol");
 		}
 		
 		if(account != null && account.getId() != 0) {
@@ -64,10 +78,19 @@ public class OptionTransactionSummaryController {
 				request.getSession().setAttribute("selectedTransactionStatusType", transactionStatusType);
 			}
 			
+			model.addAttribute("selectedTransactionSymbol", (stockSymbol==null) ? "" : stockSymbol );
+			request.getSession().setAttribute("selectedTransactionSymbol", (stockSymbol==null) ? "" : stockSymbol );
+			
 			List<OptionTransactionSummary> tos = optionTransactionSummaryService.summarizeTransactions(
-					transactionRepository.findByAccount(account), transactionStatusType);
+					transactionRepository.findByAccount(account), transactionStatusType, stockSymbol);
+			
 			model.addAttribute("transactionSummaries", tos);
-			model.addAttribute("symbols", optionTransactionSummaryService.getStockSymbols(tos));
+			model.addAttribute("symbols", 
+					optionTransactionSummaryService.getStockSymbols(
+							optionTransactionSummaryService.summarizeTransactions(transactionRepository.findByAccount(account), transactionStatusType, null)
+							)
+					);
+			
 		}
 	}
 	

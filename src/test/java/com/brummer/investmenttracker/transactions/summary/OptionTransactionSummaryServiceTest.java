@@ -37,7 +37,7 @@ public class OptionTransactionSummaryServiceTest extends TransactionImportUtilTe
 		Transaction t1 = transactionImporterFidelityATPFile.parseLine(lineClosing);
 		Transaction t2 = transactionImporterFidelityATPFile.parseLine(lineOpening);
 		List<Transaction> transactions = Arrays.asList(t1, t2);
-		List<OptionTransactionSummary> summaries = transactionSummaryService.summarizeTransactions(transactions, null);
+		List<OptionTransactionSummary> summaries = transactionSummaryService.summarizeTransactions(transactions, null, null);
 		OptionTransactionSummary test = summaries.get(0);
 		
 		assertThat(test.getOptionSymbol()).isEqualTo("SPY221102P382");
@@ -75,7 +75,7 @@ public class OptionTransactionSummaryServiceTest extends TransactionImportUtilTe
 		
 		List<Transaction> transactions = Arrays.asList(t1, t2, t3, t4);
 		
-		List<OptionTransactionSummary> summaries = transactionSummaryService.summarizeTransactions(transactions, null);
+		List<OptionTransactionSummary> summaries = transactionSummaryService.summarizeTransactions(transactions, null, null);
 		
 		OptionTransactionSummary test = summaries.get(0);
 
@@ -104,7 +104,7 @@ public class OptionTransactionSummaryServiceTest extends TransactionImportUtilTe
 
 		Transaction t1 = transactionImporterFidelityATPFile.parseLine(lineOpenCall);
 		List<Transaction> transactions = Arrays.asList(t1);
-		List<OptionTransactionSummary> summaries = transactionSummaryService.summarizeTransactions(transactions, null);
+		List<OptionTransactionSummary> summaries = transactionSummaryService.summarizeTransactions(transactions, null, null);
 		
 		OptionTransactionSummary test = summaries.get(0);
 
@@ -135,7 +135,7 @@ public class OptionTransactionSummaryServiceTest extends TransactionImportUtilTe
 		Transaction t1 = transactionImporterFidelityATPFile.parseLine(line1);
 		Transaction t2 = transactionImporterFidelityATPFile.parseLine(line2);
 		List<Transaction> transactions = Arrays.asList(t1, t2);
-		List<OptionTransactionSummary> summaries = transactionSummaryService.summarizeTransactions(transactions, null);
+		List<OptionTransactionSummary> summaries = transactionSummaryService.summarizeTransactions(transactions, null, null);
 		
 		OptionTransactionSummary test = summaries.get(0);
 
@@ -174,7 +174,7 @@ public class OptionTransactionSummaryServiceTest extends TransactionImportUtilTe
 		Transaction t5 = transactionImporterFidelityATPFile.parseLine(line1);
 		Transaction t6 = transactionImporterFidelityATPFile.parseLine(line2);
 		List<Transaction> transactions = Arrays.asList(t1, t2, t3, t4, t5, t6);
-		List<OptionTransactionSummary> summaries = transactionSummaryService.summarizeTransactions(transactions, null);
+		List<OptionTransactionSummary> summaries = transactionSummaryService.summarizeTransactions(transactions, null, null);
 		
 		OptionTransactionSummary test = summaries.get(0);
 
@@ -206,7 +206,7 @@ public class OptionTransactionSummaryServiceTest extends TransactionImportUtilTe
 		Transaction t2 = transactionImporterFidelityATPFile.parseLine(lineB);
 		
 		List<Transaction> transactions = Arrays.asList(t1, t2);
-		List<OptionTransactionSummary> summaries = transactionSummaryService.summarizeTransactions(transactions, null);
+		List<OptionTransactionSummary> summaries = transactionSummaryService.summarizeTransactions(transactions, null, null);
 		
 		OptionTransactionSummary test = summaries.get(0);
 
