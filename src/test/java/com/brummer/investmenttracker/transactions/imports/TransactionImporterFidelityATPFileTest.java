@@ -170,5 +170,18 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		
 	}
 	
+	@Test
+	void lineWithWeirdSymbol() {
+		testSetUp();
+		String lineA = "\"03/14/2022\",\"G06242104\",\"ATLASSIAN CORPORATION PLC COM USD0.1 CL A *EXCHANGED FOR CUSIP 049468101*\",\"-1\",\"YOU SOLD\",\"$249.21\",\"$249.20\",\"$0.00\",\"$0.01\",\"Margin\",\"Joint WROS - TOD (X30097152)\"";
+		String lineB = "\"02/09/2022\",\"G06242104\",\"ATLASSIAN CORPORATION PLC COM USD0.1 CL A *EXCHANGED FOR CUSIP 049468101*\",\"1\",\"YOU BOUGHT\",\"$331.4283\",\"$-331.43\",\"$0.00\",\"$0.00\",\"Margin\",\"Joint WROS - TOD (X30097152)\"";
+		Transaction transaction1 = transactionImporterFidelityATPFile.parseLine(lineA);
+		assertThat(transaction1).isNull();
+		
+		Transaction transaction2 = transactionImporterFidelityATPFile.parseLine(lineB);
+		assertThat(transaction2).isNull();
+		
+	}
+	
 	
 }

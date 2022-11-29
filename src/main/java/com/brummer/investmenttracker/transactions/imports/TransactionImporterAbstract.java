@@ -45,11 +45,14 @@ public abstract class TransactionImporterAbstract {
 		}
 
 		transaction.setSymbol(symbol);
-		if(startsWithLetterAndHasNumber) {
+		if(startsWithLetterAndHasNumber && foundSymbolAndExpDate) {
 			// is an option
 			transaction.setEquityType(EquityType.OPTION.getValue());
 		}
 		else {
+			if(startsWithLetterAndHasNumber) {
+				return null;
+			}
 			transaction.setEquityType(EquityType.STOCK.getValue());
 		}
 		return transaction;

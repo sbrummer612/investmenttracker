@@ -26,15 +26,26 @@
 		</select>
 		<label class="alert alert-warning" th:if="${#ctx.containsVariable('accountSelectionErrort')}" th:text="${accountSelectionErrort}">error</label>
 	</form>
-	
+	<div class="col-sm-3">
+	<form th:method="post" th:action="transactionsByStatus" th:object="${selectedTransactionStatusType}"> 
+		
+			<select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example" id="transactionStatusTypeDropdownList" name="selectedTransactionStatusType" onchange="this.form.submit()"  >
+				<option th:each="transactionStatusType : ${transactionStatusTypes}" th:value="${transactionStatusType.value}" th:text="${transactionStatusType.name}" th:selected="${selectedTransactionStatusType?.value == transactionStatusType.value}" ></option>
+			</select>
+		
+	</form>
+	<form th:method="post" th:action="transactionsBySymbol" th:object="${selectedTransactionSymbol}"> 
+		
+			<select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example" id="transactionSymbolDropdownList" name="selectedTransactionSymbol" onchange="this.form.submit()"  >
+				<option th:each="symbol : ${symbols}" th:value="${symbol}" th:text="${symbol}" th:selected="${selectedTransactionSymbol? == symbol}" ></option>
+			</select>
+		
+	</form>
+	</div>
 	<table class="table table-striped table-bordered">
 		<tr>
 			<td>Stock Symbol</td>
 			<td>Option Symbol</td>
-			<!-- 
-			<td>Account</td>
-			<td>Security Description</td>
-			-->
 			<td>Date Acquired</td>
 			<td>Expiration Date</td>
 			<td>Strike Price</td>
@@ -52,10 +63,6 @@
 		<tr th:each="transaction : ${transactionSummaries}">
 			<td th:text="${transaction.stockSymbol}"></td>
 			<td th:text="${transaction.optionSymbol}"></td>
-			<!-- 
-			<td th:text="${transaction.accountName}"></td>
-			<td th:text="${transaction.securityDescription}"></td>
-			-->
 			<td th:text="${transaction.dateAcquired}"></td>
 			<td th:text="${transaction.expirationDate}"></td>
 			<td th:text="'$'+${transaction.strikePrice}"></td>

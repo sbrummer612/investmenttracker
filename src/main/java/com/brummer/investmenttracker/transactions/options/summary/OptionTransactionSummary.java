@@ -64,7 +64,14 @@ public class OptionTransactionSummary implements Comparable<OptionTransactionSum
 	public int compareTo(OptionTransactionSummary o) {
 		
 		if(getDateAcquired() == null || o.getDateAcquired() == null) {
-			return 0;	
+			if(getDateAcquired() == null) {
+				return -1;
+			}
+			if(o.getDateAcquired() == null) {
+				return 1;
+			}
+			return -1;	
+//			return 0;	
 		}
 		
 		return o.getDateAcquired().compareTo(getDateAcquired());

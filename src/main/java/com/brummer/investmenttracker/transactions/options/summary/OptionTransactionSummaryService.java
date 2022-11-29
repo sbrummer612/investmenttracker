@@ -9,55 +9,48 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.brummer.investmenttracker.constants.TransactionStatusType;
 import com.brummer.investmenttracker.transactions.Transaction;
 
 @Service
 public class OptionTransactionSummaryService {
 	
-	public List<OptionTransactionSummary> summarizeTransactions(List<Transaction> transactions) throws ParseException {
+	public List<String> getStockSymbols(List<OptionTransactionSummary> transactions){
+		return transactions.stream().map(ots -> ots.getStockSymbol()).distinct().sorted().toList();
+	}
+	
+	public List<OptionTransactionSummary> summarizeTransactions(List<Transaction> transactions, TransactionStatusType transactionStatusType) throws ParseException {
 		
 		Map<String, OptionTransactionSummary> map = new HashMap<String, OptionTransactionSummary>();
-		
-//		DecimalFormat df = new DecimalFormat("####0.00");
 		
 		for(Transaction transaction : transactions) {
 			if(!map.containsKey(transaction.getSymbol())) {
 				OptionTransactionSummary ts = getOptionTransactionSummary(transaction);
-//				ts.setAccountName(t.getAccount().getName());
-//				ts.setSymbol(t.getSymbol());
-//				ts.setOptionSymbol(t.getSymbol());
-//				ts.setSecurityDescription(t.getSecurityDescription());
-//				ts.setQuantity(t.getQuantity());
-//				if(t.getQuantity() > 0) {
-//					ts.setProceeds( Double.valueOf(df.format(t.getAmount())) ) ;
-//				}
-//				else {
-//					ts.setCostBasis(t.getAmount());
-//				}
-//				ts.setGainLoss( Double.valueOf(df.format( ((ts.getCostBasis() == null) ? 0.00 : ts.getCostBasis()) + ((ts.getProceeds() == null) ? 0.00 : ts.getProceeds()) )) );
-//				
 				map.put(ts.getOptionSymbol(), ts);
 			}
 			else {
 				updateOptionTransactionSummary(map.get(transaction.getSymbol()), transaction);
-//				OptionTransactionSummary ts = map.get(t.getSymbol());
-//				ts.setQuantity(ts.getQuantity() + t.getQuantity());
-//				if(t.getQuantity() > 0) {
-//					ts.setProceeds( Double.valueOf(df.format( ((ts.getProceeds() == null) ? 0.00 : ts.getProceeds()) + t.getAmount()) ) );
-//				}
-//				else {
-//					ts.setCostBasis( Double.valueOf(df.format( ((ts.getCostBasis() == null ? 0.00 : ts.getCostBasis())) + t.getAmount() )) );
-//				}
-//				ts.setGainLoss( Double.valueOf(df.format( ((ts.getCostBasis() == null) ? 0.00 : ts.getCostBasis()) + ((ts.getProceeds() == null) ? 0.00 : ts.getProceeds()) )) );
-					
 			}
 		}
 		 
 		ArrayList<OptionTransactionSummary> t = new ArrayList<OptionTransactionSummary>(map.values());
-		Collections.sort(t);
+		
+		if(transactionStatusType != null) {
+			if(transactionStatusType.getValue() == TransactionStatusType.CLOSED.getValue()) {
+				t = t.stream().filter(ots -> ots.getQuantity() == 0).sorted().collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );	
+			}
+			else if(transactionStatusType.getValue() == TransactionStatusType.OPEN.getValue()) {
+				t = t.stream().filter(ots -> ots.getQuantity() < 0).sorted().collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );
+			}
+			else {
+				Collections.sort(t);	
+			}				
+		}
+		
 		return t;
 		
 	}
@@ -73,7 +66,7 @@ public class OptionTransactionSummaryService {
 		
 		if(optionTransactionSummary == null) {
 			optionTransactionSummary = new OptionTransactionSummary();	
-			optionTransactionSummary.setDateAcquired(transaction.getTransactionDate());
+//			optionTransactionSummary.setDateAcquired(transaction.getTransactionDate());
 		}
 		
 		if(optionTransactionSummary.getStockSymbol() == null || 
@@ -130,14 +123,16 @@ public class OptionTransactionSummaryService {
 		
 		optionTransactionSummary.setQuantity( (optionTransactionSummary.getQuantity() == null) ? transaction.getQuantity() : optionTransactionSummary.getQuantity() + transaction.getQuantity() );
 		
-		if(transaction.getAction().toUpperCase().indexOf("YOU SOLD OPENING TRANSACTION") > -1 ) {
+		if(transaction.getAction().toUpperCase().indexOf("YOU SOLD OPENING TRANSACTION") > -1 ||
+				transaction.getAction().toUpperCase().indexOf("YOU BOUGHT OPENING TRANSACTION") > -1) {
 			optionTransactionSummary.setDateAcquired(transaction.getTransactionDate());
 			optionTransactionSummary.setCostBasis((optionTransactionSummary.getCostBasis() == null) ? transaction.getAmount() : optionTransactionSummary.getCostBasis() + transaction.getAmount() );
 			optionTransactionSummary.setInitialTotalQuantity( (optionTransactionSummary.getInitialTotalQuantity() == null) ? transaction.getQuantity() : optionTransactionSummary.getInitialTotalQuantity() + transaction.getQuantity() );
 		}
 		else if(transaction.getAction().toUpperCase().indexOf("YOU BOUGHT CLOSING TRANSACTION") > -1 || 
 				transaction.getAction().toUpperCase().indexOf("ASSIGNED") > -1 ||
-				transaction.getAction().toUpperCase().indexOf("EXPIRED") > -1) {
+				transaction.getAction().toUpperCase().indexOf("EXPIRED") > -1 ||
+				transaction.getAction().toUpperCase().indexOf("YOU SOLD CLOSING TRANSACTION") > -1) {
 			Date dateClosed = optionTransactionSummary.getDateClosed();
 			if(dateClosed != null) {
 				if(transaction.getTransactionDate().compareTo(optionTransactionSummary.getDateClosed()) > 0  ) {
