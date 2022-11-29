@@ -20,7 +20,7 @@ import com.brummer.investmenttracker.transactions.Transaction;
 public class OptionTransactionSummaryService {
 	
 	public List<String> getStockSymbols(List<OptionTransactionSummary> transactions){
-		return transactions.stream().map(ots -> ots.getStockSymbol()).distinct().sorted().collect(Collectors.toCollection(ArrayList<String>::new));// .toList();
+		return transactions.stream().map(ots -> ots.getStockSymbol()).distinct().sorted().collect(Collectors.toCollection(ArrayList<String>::new));
 	}
 	
 	public List<OptionTransactionSummary> summarizeTransactions(List<Transaction> transactions, TransactionStatusType transactionStatusType, String stockSymbol) throws ParseException {
