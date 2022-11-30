@@ -41,30 +41,18 @@ public class OptionTransactionSummaryService {
 		
 		if(transactionStatusType != null) {
 			if(transactionStatusType.getValue() == TransactionStatusType.CLOSED.getValue()) {
-				if(stockSymbol == null || "".equals(stockSymbol)) {
-					t = t.stream().filter(ots -> ots.getQuantity() == 0).collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );
-				}
-				else {
-					t = t.stream().filter(ots -> ots.getQuantity() == 0).filter(ots -> ots.getStockSymbol().equals(stockSymbol)).collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );
-				}
+				t = t.stream().filter(ots -> ots.getQuantity() == 0).collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );
 			}
 			else if(transactionStatusType.getValue() == TransactionStatusType.OPEN.getValue()) {
-				if(stockSymbol == null || "".equals(stockSymbol)) {
-					t = t.stream().filter(ots -> ots.getQuantity() < 0).collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );
-				}
-				else {
-					t = t.stream().filter(ots -> ots.getQuantity() < 0).filter(ots -> ots.getStockSymbol().equals(stockSymbol)).collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );
-				}
+				t = t.stream().filter(ots -> ots.getQuantity() < 0).collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new) );
 			}
 			else {
-				if(stockSymbol == null || "".equals(stockSymbol)) {
-					t = t.stream().collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new));
-				}
-				else {
-					t = t.stream().filter(ots -> ots.getStockSymbol().equals(stockSymbol)).collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new));
-				}
-
+				t = t.stream().collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new));
 			}				
+		}
+		
+		if(stockSymbol != null && !"".equals(stockSymbol)) {
+			t = t.stream().filter(ots -> ots.getStockSymbol().equals(stockSymbol)).collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new));
 		}
 		
 		Collections.sort(t);
