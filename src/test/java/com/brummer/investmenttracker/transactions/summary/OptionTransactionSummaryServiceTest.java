@@ -228,5 +228,37 @@ public class OptionTransactionSummaryServiceTest extends TransactionImportUtilTe
 		
 	}
 	
+	@Test
+	public void testSymbolChange() throws ParseException {
+		testSetUp();
+		String lineA = "\"06/13/2022\",\"META220701C210\",\"CALL (META) META PLATFORMS INC JUL 01 22 $210 (100 SHS)\",\"1\",\"YOU BOUGHT CLOSING TRANSACTION\",\"$0.19\",\"$-19.03\",\"$0.00\",\"$0.03\",\"Margin\",\"Joint WROS - TOD (X30097152)\"";
+		String lineB = "\"06/09/2022\",\"META220701C210\",\"CALL (META) META PLATFORMS INC JUL 01 22 $210 (100 SHS)\",\"-1\",\"DISTRIBUTION SYMBOL CHANGE\",\"$0.00\",\"$0.00\",\"$0.00\",\"$0.00\",\"Margin\",\"Joint WROS - TOD (X30097152)\"";
+		
+		Transaction t1 = transactionImporterFidelityATPFile.parseLine(lineA);
+		Transaction t2 = transactionImporterFidelityATPFile.parseLine(lineB);
+		
+		List<Transaction> transactions = Arrays.asList(t1, t2);
+		List<OptionTransactionSummary> summaries = transactionSummaryService.summarizeTransactions(transactions, null, null);
+		
+		OptionTransactionSummary test = summaries.get(0);
+
+		assertThat(test.getOptionSymbol()).isEqualTo("META220701C210");
+		assertThat(test.getStockSymbol()).isEqualTo("META");
+		assertThat(test.getDateAcquired()).isNotNull();
+		assertThat(test.getDateAcquired().toString()).isEqualTo("2022-06-09");
+		assertThat(test.getDateAcquired()).isNotNull();
+		assertThat(test.getDateClosed()).isNotNull();
+		assertThat(test.getDateClosed().toString()).isEqualTo("2022-06-13");
+		assertThat(test.getQuantity()).isEqualTo(0.00);
+		assertThat(test.getExpirationDate()).isEqualTo("2022-07-01");
+		assertThat(test.getStrikePrice()).isEqualTo(210);
+		assertThat(test.getCostBasis()).isEqualTo(0.00);
+		assertThat(test.getProceeds()).isEqualTo(-19.03);
+		assertThat(test.getGainLoss()).isEqualTo(-19.03);
+		assertThat(test.getReturnPercentage()).isEqualTo(-0.09);
+		assertThat(test.getReturnPercentageAnnualized()).isEqualTo(-8.19);
+		
+	}
+	
 	
 }

@@ -48,7 +48,7 @@ public class OptionTransactionSummaryService {
 			}
 			else {
 				t = t.stream().collect(Collectors.toCollection(ArrayList<OptionTransactionSummary>::new));
-			}				
+			}
 		}
 		
 		if(stockSymbol != null && !"".equals(stockSymbol)) {
@@ -129,7 +129,8 @@ public class OptionTransactionSummaryService {
 		optionTransactionSummary.setQuantity( (optionTransactionSummary.getQuantity() == null) ? transaction.getQuantity() : optionTransactionSummary.getQuantity() + transaction.getQuantity() );
 		
 		if(transaction.getAction().toUpperCase().indexOf("YOU SOLD OPENING TRANSACTION") > -1 ||
-				transaction.getAction().toUpperCase().indexOf("YOU BOUGHT OPENING TRANSACTION") > -1) {
+				transaction.getAction().toUpperCase().indexOf("YOU BOUGHT OPENING TRANSACTION") > -1 ||
+				transaction.getAction().toUpperCase().indexOf("DISTRIBUTION SYMBOL CHANGE") > -1) {
 			optionTransactionSummary.setDateAcquired(transaction.getTransactionDate());
 			optionTransactionSummary.setCostBasis((optionTransactionSummary.getCostBasis() == null) ? transaction.getAmount() : optionTransactionSummary.getCostBasis() + transaction.getAmount() );
 			optionTransactionSummary.setInitialTotalQuantity( (optionTransactionSummary.getInitialTotalQuantity() == null) ? transaction.getQuantity() : optionTransactionSummary.getInitialTotalQuantity() + transaction.getQuantity() );

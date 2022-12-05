@@ -13,18 +13,8 @@
 	<h1>Import Transactions</h1>
 	<h2></h2>
 	
-	<div>Select Account</div>
 	<div class="row g-3">
-		<!-- <form th:method="post" th:action="importOptions" th:object="${selectedAccount}"> -->
 		<form method="POST" enctype="multipart/form-data" action="/transactionController/importTransactionsFile"> 
-			<div class="col-sm-3">
-				<select class="form-select form-select-sm mb-3" aria-label=".form-select-lg example" id="accountDropdownList" name="selectedAccount">
-					<option value="">Select Account</option>
-					<option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}" th:selected="${selectedAccount?.id == account.id}" ></option>
-				</select>
-				<label class="text-danger" th:if="${errorMessage}" th:text="${errorMessage}">Quantity Error</label>
-			</div>
-
 			<div th:if="${message}">
 				<h2 th:text="${message}"/>
 			</div>

@@ -183,5 +183,34 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		
 	}
 	
-	
+	@Test
+	void lineWithCallSymbolChange() {
+		testSetUp();
+		String lineA = "\"06/09/2022\",\"META220701C210\",\"CALL (META) META PLATFORMS INC JUL 01 22 $210 (100 SHS)\",\"-1\",\"DISTRIBUTION SYMBOL CHANGE\",\"$0.00\",\"$0.00\",\"$0.00\",\"$0.00\",\"Margin\",\"Joint WROS - TOD (X30097152)\"";
+		Transaction transaction1 = transactionImporterFidelityATPFile.parseLine(lineA);
+		assertThat(transaction1).isNotNull();
+		assertThat(transaction1.getAccount().getName()).isEqualTo("Joint WROS - TOD X30097152");
+		assertThat(transaction1.getAction()).isEqualTo("DISTRIBUTION SYMBOL CHANGE");
+		assertThat(transaction1.getAmount()).isEqualTo(0.00);
+		assertThat(transaction1.getQuantity()).isEqualTo(-1.0);
+		assertThat(transaction1.getSecurityDescription()).isEqualTo("CALL (META) META PLATFORMS INC JUL 01 22 $210 (100 SHS)");
+		assertThat(transaction1.getSymbol()).isEqualTo("META220701C210");
+		assertThat(transaction1.getTransactionDate().toString()).isEqualTo("2022-06-09");
+		assertThat(transaction1.getEquityType()).isEqualTo(EquityType.OPTION.getValue());
+		
+		String lineB = "\"06/13/2022\",\"META220701C210\",\"CALL (META) META PLATFORMS INC JUL 01 22 $210 (100 SHS)\",\"1\",\"YOU BOUGHT CLOSING TRANSACTION\",\"$0.19\",\"$-19.03\",\"$0.00\",\"$0.03\",\"Margin\",\"Joint WROS - TOD (X30097152)\"";
+		Transaction transaction2 = transactionImporterFidelityATPFile.parseLine(lineB);
+		
+		assertThat(transaction2).isNotNull();
+		assertThat(transaction2.getAccount().getName()).isEqualTo("Joint WROS - TOD X30097152");
+		assertThat(transaction2.getAction()).isEqualTo("YOU BOUGHT CLOSING TRANSACTION");
+		assertThat(transaction2.getAmount()).isEqualTo(-19.03);
+		assertThat(transaction2.getQuantity()).isEqualTo(1.0);
+		assertThat(transaction2.getSecurityDescription()).isEqualTo("CALL (META) META PLATFORMS INC JUL 01 22 $210 (100 SHS)");
+		assertThat(transaction2.getSymbol()).isEqualTo("META220701C210");
+		assertThat(transaction2.getTransactionDate().toString()).isEqualTo("2022-06-13");
+		assertThat(transaction2.getEquityType()).isEqualTo(EquityType.OPTION.getValue());
+		
+		
+	}
 }

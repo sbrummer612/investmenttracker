@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 
 import com.brummer.investmenttracker.accounts.Account;
 import com.brummer.investmenttracker.options.Option;
+import com.brummer.investmenttracker.transactions.options.summary.OptionTransactionSummary;
 
 import lombok.Data;
 
@@ -65,6 +66,18 @@ public class Trade {
 	private Double adjustedCostBasis;
 	
 	@Transient
+	private Double totalGainLoss;
+	
+	@Transient
+	private Double averageOptionReturn;
+	
+	@Transient
+	private Double averageOptionAnnualizedReturn;
+	
+	@Transient
 	private List<Option> options;
+	
+	@Transient
+	private List<OptionTransactionSummary> optionTransactionSummaries;
 	
 }
