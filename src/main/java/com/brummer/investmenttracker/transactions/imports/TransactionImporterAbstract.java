@@ -1,6 +1,7 @@
 package com.brummer.investmenttracker.transactions.imports;
 
 import com.brummer.investmenttracker.constants.EquityType;
+import com.brummer.investmenttracker.constants.OptionType;
 import com.brummer.investmenttracker.transactions.Transaction;
 
 public abstract class TransactionImporterAbstract {
@@ -16,6 +17,7 @@ public abstract class TransactionImporterAbstract {
 		StringBuffer stockSymbol = new StringBuffer();
 		StringBuffer optionExpDate = new StringBuffer();
 		StringBuffer strikePrice = new StringBuffer();
+		StringBuffer optionSymbol = new StringBuffer();
 		boolean startsWithLetter = false;
 		boolean startsWithLetterAndHasNumber = false;
 		boolean foundSymbolAndExpDate = false;
@@ -40,14 +42,22 @@ public abstract class TransactionImporterAbstract {
 			}
 			else if(startsWithLetter && startsWithLetterAndHasNumber && Character.isAlphabetic(character)) {
 				foundSymbolAndExpDate = true;
+				optionSymbol.append(character);
 			}
-			
 		}
 
 		transaction.setSymbol(symbol);
 		if(startsWithLetterAndHasNumber && foundSymbolAndExpDate) {
 			// is an option
 			transaction.setEquityType(EquityType.OPTION.getValue());
+			if(optionSymbol != null) {
+				if(OptionType.CALL.getValue().equals(optionSymbol.toString())) {
+					transaction.setOptionType(OptionType.CALL.getValue());
+				}
+				else if(OptionType.PUT.getValue().equals(optionSymbol.toString())) {
+					transaction.setOptionType(OptionType.PUT.getValue());
+				}
+			}
 		}
 		else {
 			if(startsWithLetterAndHasNumber) {

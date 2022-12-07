@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.brummer.investmenttracker.constants.EquityType;
+import com.brummer.investmenttracker.constants.OptionType;
 import com.brummer.investmenttracker.transactions.Transaction;
 
 @SpringBootTest
@@ -80,6 +81,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		assertThat(transaction.getQuantity()).isEqualTo(1.0);
 		assertThat(transaction.getSecurityDescription()).isEqualTo("CALL (SPY) SPDR S&P500 ETF NOV 11 22 $395 (100 SHS)");
 		assertThat(transaction.getSymbol()).isEqualTo("SPY221111C395");
+		assertThat(transaction.getOptionType()).isEqualTo(OptionType.CALL.getValue());
 		assertThat(transaction.getTransactionDate().toString()).isEqualTo("2022-11-14");
 		assertThat(transaction.getEquityType()).isEqualTo(EquityType.OPTION.getValue());
 		
@@ -100,6 +102,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		assertThat(transaction.getQuantity()).isEqualTo(-1.0);
 		assertThat(transaction.getSecurityDescription()).isEqualTo("CALL (SPY) SPDR S&P500 ETF NOV 11 22 $395 (100 SHS)");
 		assertThat(transaction.getSymbol()).isEqualTo("SPY221111C395");
+		assertThat(transaction.getOptionType()).isEqualTo(OptionType.CALL.getValue());
 		assertThat(transaction.getTransactionDate().toString()).isEqualTo("2022-11-10");
 		assertThat(transaction.getEquityType()).isEqualTo(EquityType.OPTION.getValue());
 	}
@@ -118,6 +121,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		assertThat(transaction.getQuantity()).isEqualTo(1.0);
 		assertThat(transaction.getSecurityDescription()).isEqualTo("CALL (SPY) SPDR S&P500 ETF NOV 09 22 $383 (100 SHS)");
 		assertThat(transaction.getSymbol()).isEqualTo("SPY221109C383");
+		assertThat(transaction.getOptionType()).isEqualTo(OptionType.CALL.getValue());
 		assertThat(transaction.getTransactionDate().toString()).isEqualTo("2022-11-09");
 		assertThat(transaction.getEquityType()).isEqualTo(EquityType.OPTION.getValue());
 	}
@@ -136,6 +140,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		assertThat(transaction.getQuantity()).isEqualTo(1.0);
 		assertThat(transaction.getSecurityDescription()).isEqualTo("CALL (SPY) SPDR S&P500 ETF NOV 11 22 $395 (100 SHS)");
 		assertThat(transaction.getSymbol()).isEqualTo("SPY221111C395");
+		assertThat(transaction.getOptionType()).isEqualTo(OptionType.CALL.getValue());
 		assertThat(transaction.getTransactionDate().toString()).isEqualTo("2022-11-11");
 		assertThat(transaction.getEquityType()).isEqualTo(EquityType.OPTION.getValue());
 		
@@ -155,6 +160,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		assertThat(transaction.getQuantity()).isEqualTo(100.0);
 		assertThat(transaction.getSecurityDescription()).isEqualTo("TENARIS S.A. SPONS ADS EACH REP 2 ORD SHS");
 		assertThat(transaction.getSymbol()).isEqualTo("TS");
+		assertThat(transaction.getOptionType()).isNull();
 		assertThat(transaction.getTransactionDate().toString()).isEqualTo("2022-11-15");
 		assertThat(transaction.getEquityType()).isEqualTo(EquityType.STOCK.getValue());
 		
@@ -195,6 +201,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		assertThat(transaction1.getQuantity()).isEqualTo(-1.0);
 		assertThat(transaction1.getSecurityDescription()).isEqualTo("CALL (META) META PLATFORMS INC JUL 01 22 $210 (100 SHS)");
 		assertThat(transaction1.getSymbol()).isEqualTo("META220701C210");
+		assertThat(transaction1.getOptionType()).isEqualTo(OptionType.CALL.getValue());
 		assertThat(transaction1.getTransactionDate().toString()).isEqualTo("2022-06-09");
 		assertThat(transaction1.getEquityType()).isEqualTo(EquityType.OPTION.getValue());
 		
@@ -208,9 +215,45 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		assertThat(transaction2.getQuantity()).isEqualTo(1.0);
 		assertThat(transaction2.getSecurityDescription()).isEqualTo("CALL (META) META PLATFORMS INC JUL 01 22 $210 (100 SHS)");
 		assertThat(transaction2.getSymbol()).isEqualTo("META220701C210");
+		assertThat(transaction1.getOptionType()).isEqualTo(OptionType.CALL.getValue());
 		assertThat(transaction2.getTransactionDate().toString()).isEqualTo("2022-06-13");
 		assertThat(transaction2.getEquityType()).isEqualTo(EquityType.OPTION.getValue());
 		
+	}
+	
+	@Test
+	void lineHistoryPutBoughtClosing() {
+		testSetUp();
+		String lineA = "\"11/30/2022\",\"SPY221202P399\",\"PUT (SPY) SPDR S&P500 ETF DEC 02 22 $399 (100 SHS)\",\"1\",\"YOU BOUGHT CLOSING TRANSACTION 22334H1R6E\",\"$1.64\",\"$-164.67\",\"$0.65\",\"$0.02\",\"Cash\",\"Joint WROS - TOD (X30097152)\"";
+		Transaction transaction1 = transactionImporterFidelityATPFile.parseLine(lineA);
+		assertThat(transaction1).isNotNull();
+		assertThat(transaction1.getAccount().getName()).isEqualTo("Joint WROS - TOD X30097152");
+		assertThat(transaction1.getAction()).isEqualTo("YOU BOUGHT CLOSING TRANSACTION 22334H1R6E");
+		assertThat(transaction1.getAmount()).isEqualTo(-164.67);
+		assertThat(transaction1.getQuantity()).isEqualTo(1.0);
+		assertThat(transaction1.getSecurityDescription()).isEqualTo("PUT (SPY) SPDR S&P500 ETF DEC 02 22 $399 (100 SHS)");
+		assertThat(transaction1.getSymbol()).isEqualTo("SPY221202P399");
+		assertThat(transaction1.getOptionType()).isEqualTo(OptionType.PUT.getValue());
+		assertThat(transaction1.getTransactionDate().toString()).isEqualTo("2022-11-30");
+		assertThat(transaction1.getEquityType()).isEqualTo(EquityType.OPTION.getValue());
 		
 	}
+	
+	@Test
+	void lineHistoryPutSoldOpening() {
+		testSetUp();
+		String lineA = "\"11/30/2022\",\"SPY221202P399\",\"PUT (SPY) SPDR S&P500 ETF DEC 02 22 $399 (100 SHS)\",\"-2\",\"YOU SOLD OPENING TRANSACTION\",\"$2.21\",\"$440.64\",\"$1.30\",\"$0.06\",\"Cash\",\"Joint WROS - TOD (X30097152)\"";
+		Transaction transaction1 = transactionImporterFidelityATPFile.parseLine(lineA);
+		assertThat(transaction1).isNotNull();
+		assertThat(transaction1.getAccount().getName()).isEqualTo("Joint WROS - TOD X30097152");
+		assertThat(transaction1.getAction()).isEqualTo("YOU SOLD OPENING TRANSACTION");
+		assertThat(transaction1.getAmount()).isEqualTo(440.64);
+		assertThat(transaction1.getQuantity()).isEqualTo(-2.0);
+		assertThat(transaction1.getSecurityDescription()).isEqualTo("PUT (SPY) SPDR S&P500 ETF DEC 02 22 $399 (100 SHS)");
+		assertThat(transaction1.getSymbol()).isEqualTo("SPY221202P399");
+		assertThat(transaction1.getOptionType()).isEqualTo(OptionType.PUT.getValue());
+		assertThat(transaction1.getTransactionDate().toString()).isEqualTo("2022-11-30");
+		assertThat(transaction1.getEquityType()).isEqualTo(EquityType.OPTION.getValue());
+	}
+	
 }

@@ -12,6 +12,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long>{
 	
 	List<Transaction> findByAccount(Account account);
 	
+	List<Transaction> findByAccountAndOptionType(Account account, String optionType);
+	
 	List<Transaction> findByAccountOrderByTransactionDateDesc(Account account);
 	
 }

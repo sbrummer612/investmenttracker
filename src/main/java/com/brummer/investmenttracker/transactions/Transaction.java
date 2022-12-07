@@ -43,6 +43,9 @@ public class Transaction {
 	@Column(name ="equityType")
 	private String equityType; 
 	
+	@Column(name ="optionType")
+	private String optionType;
+	
 	@Column(name = "security_description")
 	private String securityDescription;
 	

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.brummer.investmenttracker.accounts.Account;
 import com.brummer.investmenttracker.accounts.AccountRepository;
+import com.brummer.investmenttracker.constants.OptionType;
 import com.brummer.investmenttracker.constants.TransactionStatusType;
 import com.brummer.investmenttracker.trades.Trade;
 import com.brummer.investmenttracker.trades.TradeRepository;
@@ -47,29 +48,29 @@ public class TradeTransactionSummaryController {
 	@GetMapping("/trades")
 	public String trades(@RequestParam(required = false) String selectedAccountId, Model model, HttpServletRequest request) throws ParseException {
 		
-		populate(selectedAccountId, null, null, model, request);
+		populate(selectedAccountId, null, null, null, model, request);
 		return "tradeTransactionSummaryList";
 	}
 	
 	@RequestMapping("/tradesByStatus")
 	public String tradesByStatus(@ModelAttribute("selectedTransactionStatusType") TransactionStatusType transactionStatusType, Model model, HttpServletRequest request) throws ParseException {
-		populate(null, transactionStatusType, null, model, request);
+		populate(null, transactionStatusType, null, null, model, request);
 		return "tradeTransactionSummaryList";
 	}
 	
 	@RequestMapping("/tradesBySymbol")
 	public String tradesBySymbol(@ModelAttribute("selectedTransactionSymbol") String stockSymbol, Model model, HttpServletRequest request) throws ParseException {
-		populate(null, null, stockSymbol, model, request);
+		populate(null, null, stockSymbol, null, model, request);
 		return "tradeTransactionSummaryList";
 	}
 	
-	@RequestMapping("/addTrade")
-	public String addTrade(Model model) {
-		model.addAttribute("trade", new Trade());
-		return "tradeTransactionSummaryAddEdit";
+	@RequestMapping("/tradesByOptionType")
+	public String tradesByOptionType(@ModelAttribute("selectedTransactionOptionType") String optionType, Model model, HttpServletRequest request) throws ParseException {
+		populate(null, null, null, optionType, model, request);
+		return "tradeTransactionSummaryList";
 	}
-	
-	private void populate(String selectedAccountId, TransactionStatusType transactionStatusType, String stockSymbol, Model model, HttpServletRequest request) throws ParseException {
+
+	private void populate(String selectedAccountId, TransactionStatusType transactionStatusType, String stockSymbol, String optionType, Model model, HttpServletRequest request) throws ParseException {
 		
 		List<Account> accounts = new ArrayList<Account>();
 		Account allAccount = new Account();
@@ -80,6 +81,7 @@ public class TradeTransactionSummaryController {
 		
 		model.addAttribute("accounts", accounts);
 		model.addAttribute("transactionStatusTypes", EnumSet.allOf(TransactionStatusType.class));
+		model.addAttribute("optionTypes", EnumSet.allOf(OptionType.class));
 
 		
 		Account account = null;
@@ -107,6 +109,14 @@ public class TradeTransactionSummaryController {
 			transactionStatusType = (TransactionStatusType)request.getSession().getAttribute("selectedTransactionStatusType");
 		}
 		
+		if(optionType == null) {
+			optionType = (String) request.getSession().getAttribute("selectedTransactionOptionType");
+		}
+		
+		if(stockSymbol == null) {
+			stockSymbol = (String) request.getSession().getAttribute("selectedTransactionSymbol");
+		}
+		
 		if(account != null && account.getId() != 0) {
 			model.addAttribute("selectedAccount", account);
 			request.getSession().setAttribute("selectedAccount", account);
@@ -115,6 +125,9 @@ public class TradeTransactionSummaryController {
 				model.addAttribute("selectedTransactionStatusType", transactionStatusType);
 				request.getSession().setAttribute("selectedTransactionStatusType", transactionStatusType);
 			}
+			
+			model.addAttribute("selectedTransactionOptionType", (optionType == null) ? OptionType.ALL.getValue() : optionType);
+			request.getSession().setAttribute("selectedTransactionOptionType", (optionType == null) ? OptionType.ALL.getValue() : optionType);
 			
 			model.addAttribute("selectedTransactionSymbol", (stockSymbol==null) ? "" : stockSymbol );
 			request.getSession().setAttribute("selectedTransactionSymbol", (stockSymbol==null) ? "" : stockSymbol );
@@ -132,7 +145,7 @@ public class TradeTransactionSummaryController {
 				}
 			}
 			else {
-				if(stockSymbol == null) {
+				if(stockSymbol == null || "".equals(stockSymbol)) {
 					trades = tradeRepository.findByAccount(account);
 					symbolTrades = trades;
 				}
@@ -143,13 +156,27 @@ public class TradeTransactionSummaryController {
 			}
 			
 			for(Trade trade : trades) {
-				trade.setOptionTransactionSummaries(
-					optionTransactionSummaryService.summarizeTransactions(
-						transactionRepository.findByAccount(trade.getAccount()), 
-						transactionStatusType, 
-						trade.getSymbol()
-					)
-				);
+				
+				if(optionType == null || OptionType.ALL.getValue().equals(optionType)) {
+					trade.setOptionTransactionSummaries(
+							optionTransactionSummaryService.summarizeTransactions(
+								transactionRepository.findByAccount(trade.getAccount()), 
+								transactionStatusType, 
+								trade.getSymbol()
+							)
+						);
+				}
+				else {
+					trade.setOptionTransactionSummaries(
+							optionTransactionSummaryService.summarizeTransactions(
+								transactionRepository.findByAccountAndOptionType(trade.getAccount(), optionType), 
+								transactionStatusType, 
+								trade.getSymbol()
+							)
+						);
+				}
+				
+				
 			}
 			
 			model.addAttribute("symbols", symbolTrades.stream().map(trade -> trade.getSymbol()).distinct().sorted().collect(Collectors.toCollection(ArrayList<String>::new)) );
@@ -157,6 +184,8 @@ public class TradeTransactionSummaryController {
 			tradeTransactionSummaryService.summarizeTransactions((trades));
 			
 			model.addAttribute( "trades", trades );
+			
+			model.addAttribute( "tradeSummary", tradeTransactionSummaryService.buildTradeSummaryTransaction(trades) );
 		}
 		
 	}
