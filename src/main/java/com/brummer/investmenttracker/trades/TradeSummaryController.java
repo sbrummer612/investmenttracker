@@ -74,7 +74,7 @@ public class TradeSummaryController {
 			
 			request.getSession().setAttribute("selectedAccount", account);
 			model.addAttribute("selectedAccount", account);
-			List<Trade> trades = tradeRepository.findByAccount(account);
+			List<Trade> trades = tradeRepository.findByAccountOrderBySymbol(account);
 			final Account tAccount = account;
 			final OptionType tOptionType = (optionType != null) ? optionType : OptionType.ALL;
 			trades

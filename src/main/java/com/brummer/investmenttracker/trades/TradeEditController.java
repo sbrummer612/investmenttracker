@@ -54,6 +54,7 @@ public class TradeEditController {
 		if(bindingResult.hasErrors()) {
 			return "tradeAddEdit";
 		}
+		trade.setSymbol(trade.getSymbol().toUpperCase());
 		tradeRepository.save(trade);
 		return redirect;
 	}
@@ -75,7 +76,7 @@ public class TradeEditController {
 		
 		if(account != null && account.getId() != 0) {
 			request.getSession().setAttribute("selectedAccount", account);
-			model.addAttribute("trades", tradeRepository.findByAccount(account));
+			model.addAttribute("trades", tradeRepository.findByAccountOrderBySymbol(account));
 		}
 	}
 	

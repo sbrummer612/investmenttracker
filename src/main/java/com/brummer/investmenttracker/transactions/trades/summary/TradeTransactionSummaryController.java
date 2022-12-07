@@ -146,12 +146,12 @@ public class TradeTransactionSummaryController {
 			}
 			else {
 				if(stockSymbol == null || "".equals(stockSymbol)) {
-					trades = tradeRepository.findByAccount(account);
+					trades = tradeRepository.findByAccountOrderBySymbol(account);
 					symbolTrades = trades;
 				}
 				else {
 					trades = tradeRepository.findByAccountAndSymbol(account, stockSymbol);
-					symbolTrades = tradeRepository.findByAccount(account);
+					symbolTrades = tradeRepository.findByAccountOrderBySymbol(account);
 				}
 			}
 			

@@ -8,7 +8,8 @@ import com.brummer.investmenttracker.accounts.Account;
 
 public interface TradeRepository extends JpaRepository<Trade, Long>{
 
-	List<Trade> findByAccount(Account account);
+//	List<Trade> findByAccount(Account account);
+	List<Trade> findByAccountOrderBySymbol(Account account);
 	List<Trade> findByAccountAndSymbol(Account account, String symbol);
 	List<Trade> findBySymbol(String symbol);
 }

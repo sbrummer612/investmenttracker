@@ -39,7 +39,7 @@ public class TradeController {
 		
 		model.addAttribute("accounts", accountRepository.findAll());
 		request.getSession().setAttribute("selectedAccount", account );
-		List<Trade> trades = tradeRepository.findByAccount(account);
+		List<Trade> trades = tradeRepository.findByAccountOrderBySymbol(account);
 		for(Trade trade : trades) {
 			trade.setOptions(optionRepository.findByAccountAndSymbolAndOptionTypeOrderByDateSoldDesc(account, trade.getSymbol(), "C"));
 		}
@@ -53,7 +53,7 @@ public class TradeController {
 		model.addAttribute("accounts", accountRepository.findAll());
 		Account account = (Account)request.getSession().getAttribute("selectedAccount");
 		if(account != null) {
-			model.addAttribute("trades", tradeRepository.findByAccount(account));
+			model.addAttribute("trades", tradeRepository.findByAccountOrderBySymbol(account));
 		}
 		return "trades";
 	}
@@ -87,7 +87,7 @@ public class TradeController {
 			model.addAttribute("trade", tradeRepository.findById(tradeIdLong).get());
 			Account account = (Account)request.getSession().getAttribute("selectedAccount");
 			if(account != null) {
-				model.addAttribute("trades", tradeRepository.findByAccount(account));
+				model.addAttribute("trades", tradeRepository.findByAccountOrderBySymbol(account));
 			}
 			List<Account> accounts = accountRepository.findAll();
 			model.addAttribute("accounts", accounts);
