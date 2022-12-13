@@ -74,89 +74,143 @@
 	<th:block th:each="trade : ${trades}">
 		<th:block th:if="${not #lists.isEmpty(trade.optionTransactionSummaries)}" >
 			<table class="table table-bordered table-hover"> <!-- table-striped  -->
-				<thead class="table-secondary">
-				<tr>
-					<th>Symbol</th>
-					<th>Quantity</th>
-					<th>Account</th>
-					<th>Date Acquired</th>
-					<th>Date Sold</th>
-					<th>Proceeds</th>
-					<th>Cost Basis</th>
-					<th>Adjusted Cost Basis</th>
-					<th>Total Option Gain/Loss</th>
-					<th>Average Option Return</th>
-					<th>Average Option Annualized Return</th>
-				</tr>
-				</thead>
 				<tr th:if="${#lists.isEmpty(trades)}">
 					<td colspan="12">No Trades found.</td>
 				</tr>
-					<tr class="table-light">
-						<td class="fs-6" th:text="${trade.symbol}"></td>
-						<td class="fs-6" th:text="${trade.quantity}"></td>
-						<td class="fs-6" style="width: 6rem;" th:text="${trade.account?.name}"></td>
-						<td class="fs-6" th:text="${trade.dateAcquired}"></td>
-						<td class="fs-6" th:text="${trade.dateSold}"></td>
-						<td class="fs-6" th:text="${#numbers.formatCurrency(trade.proceeds)}"></td>
-						<td class="fs-6" th:text="${#numbers.formatCurrency(trade.costBasis)}"></td>
-						<td class="fs-6" th:text="${#numbers.formatCurrency(trade.adjustedCostBasis)}"></td>
-						<td th:class="${trade.totalGainLoss != null && trade.totalGainLoss > 0 ? 'fs-6 bg-success text-white' : '' }" 
-							th:attr="class=${trade.totalGainLoss != null && trade.totalGainLoss < 0 ? 'fs-6 bg-danger text-white' : '' }"
-						    th:text="${#numbers.formatCurrency(trade.totalGainLoss)}"></td>
-						
-						<td th:if="${trade.averageOptionReturn != null}"
-							th:class="${trade.averageOptionReturn > 0 ? 'fs-6 bg-success text-white' : '' }" 
-							th:attr="class=${trade.averageOptionReturn < 0 ? 'fs-6 bg-danger text-white' : '' }" 
-							th:text="${trade.averageOptionReturn}+'%'"></td>
-						<td th:if="${trade.averageOptionReturn == null}"></td>
-						
-						<td th:if="${trade.averageOptionAnnualizedReturn != null}"
-							th:class="${trade.averageOptionAnnualizedReturn > 0 ? 'fs-6 bg-success text-white' : 'fs-6 bg-danger text-white' }" 
-							th:attr="class=${trade.averageOptionAnnualizedReturn < 0 ? 'fs-6 bg-danger text-white' : '' }"
-							th:text="${trade.averageOptionAnnualizedReturn}+'%'"></td>
-						<td th:if="${trade.averageOptionAnnualizedReturn == null}"></td>
-						
-					</tr>
-					<tr>
-						<td colspan="12">
-							<table class="table table-bordered table-sm">
-								<thead class="table-secondary">
-								<tr>
-									<th>Option Symbol</th>
-									<th>Date Acquired</th>
-									<th>Expiration Date</th>
-									<th>Strike Price</th>
-									<th>Quantity</th>
-									<th>Cost Basis</th>
-									<th>Proceeds</th>
-									<th>Gain/Loss</th>
-									<th>Date Closed</th>
-									<th>Return %</th>
-									<th>Return % Annualized</th>
-								</tr>
-								</thead>
-								<tr th:each="transaction : ${trade.optionTransactionSummaries}">
-									<td class="fs-6" th:text="${transaction.optionSymbol}"></td>
-									<td class="fs-6" th:text="${transaction.dateAcquired}"></td>
-									<td class="fs-6" th:text="${transaction.expirationDate}"></td>
-									<td class="fs-6" th:text="'$'+${transaction.strikePrice}"></td>
-									<td th:class="${transaction.quantity < 0 ? 'fs-6 bg-danger text-white' : 'fs-6 bg-success text-white' }" th:text="${transaction.quantity}"></td>
-									<td class="fs-6" th:text="'$'+${transaction.costBasis}"></td>
-									<td class="fs-6" th:text="${transaction.proceeds} ? '$'+${transaction?.proceeds} : ${transaction?.proceeds}"></td>
-									<td th:class="${transaction.gainLoss < 0 ? 'fs-6 bg-danger text-white' : 'fs-6 bg-success text-white' }" th:text="'$'+${transaction.gainLoss}"></td>
-									<td class="fs-6" th:text="${transaction.dateClosed}"></td>
-									<td th:if="${transaction.returnPercentage != null}"
-										th:class="${transaction.returnPercentage < 0 ? 'fs-6 bg-danger text-white' : 'fs-6 bg-success text-white' }" th:text="${transaction.returnPercentage} + '%'"></td>
-									<td class="fs-6" th:if="${transaction.returnPercentage == null}"></td>
-									
-									<td th:if="${transaction.returnPercentageAnnualized != null}"
-										th:class="${transaction.returnPercentageAnnualized < 0 ? 'fs-6 bg-danger text-white' : 'fs-6 bg-success text-white' }" th:text="${transaction.returnPercentageAnnualized} + '%'"></td>
-									<td class="fs-6" th:if="${transaction.returnPercentageAnnualized == null}"></td>
-								</tr>
-							</table>
-						</td>
-					</tr>
+				<tr class="table-light">
+					<td>
+						<table class="table">
+							<tr>
+								<td colspan="7">
+									<table class="table">
+										<thead class="table-secondary">
+											<tr>
+												<th>Symbol</th>
+												<th>Account</th>
+												<th>Total Option Gain/Loss</th>
+												<th>Average Option Return</th>
+												<th>Average Option Annualized Return</th>
+											</tr>
+										</thead>
+										<tr>
+											<td class="fs-6" th:text="${trade.symbol}"></td>
+											<td class="fs-6" th:text="${trade.account?.name}"></td> <!-- style="width: 6rem;"  -->
+											<td th:class="${trade.totalGainLoss != null && trade.totalGainLoss > 0 ? 'fs-6 bg-success text-white' : '' }" 
+												th:attr="class=${trade.totalGainLoss != null && trade.totalGainLoss < 0 ? 'fs-6 bg-danger text-white' : '' }"
+											    th:text="${#numbers.formatCurrency(trade.totalGainLoss)}"></td>
+											
+											<td th:if="${trade.averageOptionReturn != null}"
+												th:class="${trade.averageOptionReturn > 0 ? 'fs-6 bg-success text-white' : '' }" 
+												th:attr="class=${trade.averageOptionReturn < 0 ? 'fs-6 bg-danger text-white' : '' }" 
+												th:text="${trade.averageOptionReturn}+'%'"></td>
+											<td th:if="${trade.averageOptionReturn == null}"></td>
+											
+											<td th:if="${trade.averageOptionAnnualizedReturn != null}"
+												th:class="${trade.averageOptionAnnualizedReturn > 0 ? 'fs-6 bg-success text-white' : 'fs-6 bg-danger text-white' }" 
+												th:attr="class=${trade.averageOptionAnnualizedReturn < 0 ? 'fs-6 bg-danger text-white' : '' }"
+												th:text="${trade.averageOptionAnnualizedReturn}+'%'"></td>
+											<td th:if="${trade.averageOptionAnnualizedReturn == null}"></td>
+										</tr>
+									</table>			
+								</td>
+							</tr>
+							<tr>
+								<td colspan="7">
+									<table class="table">
+										<thead class="table-secondary">
+											<tr>
+												<th class="align-top">Date Acquired</th>
+												<th class="align-top">Quantity</th>
+												<th class="align-top">Cost Basis</th>
+												<th class="align-top">Most Recent Price</th>
+												<th class="align-top">Stock Current Gain/Loss</th>
+												<th class="align-top">Stock Adjusted Cost Basis</th>
+												<th class="align-top">Stock Adjusted Gain/Loss <br><span style="font-size: 60%;">(including Option Gain/Loss)</span></th>
+											</tr>
+										</thead>
+										<tr>
+											<td class="fs-6" th:text="${trade.dateAcquired}"></td>
+											<td class="fs-6" th:text="${trade.quantity}"></td>
+											<td class="fs-6" th:text="${#numbers.formatCurrency(trade.costBasis)}"></td>
+											<td class="fs-6" th:text="${#numbers.formatCurrency(trade.mostRecentPrice)}"></td>
+											
+											<td th:if="${trade.currentGainLoss != null}"
+												th:attr="class=${trade.currentGainLoss < 0 ? 'fs-6 bg-danger text-white' : 'fs-6 bg-success text-white' }"
+												th:text="${#numbers.formatCurrency(trade.currentGainLoss)}"></td>
+											<td th:if="${trade.currentGainLoss == null}"></td>
+											
+											<td class="fs-6" th:text="${#numbers.formatCurrency(trade.adjustedCostBasis)}"></td>
+											
+											<td th:if="${trade.currentAdjustedGainLoss != null}"
+												th:attr="class=${trade.currentAdjustedGainLoss < 0 ? 'fs-6 bg-danger text-white' : 'fs-6 bg-success text-white' }"
+												th:text="${#numbers.formatCurrency(trade.currentAdjustedGainLoss)}"></td>
+											<td th:if="${trade.currentAdjustedGainLoss == null}"></td>
+											
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table >
+										<thead class="table-secondary">
+											<tr>
+												<th>Date Sold</th>
+												<th>Proceeds</th>
+												
+											</tr>
+										</thead>
+										<tr class="table-light">
+											<td th:if="${trade.dateSold != null}" class="fs-6" th:text="${trade.dateSold}"></td>
+											<td th:if="${trade.dateSold == null}"><br></td>
+											<td th:if="${trade.proceeds != null}" class="fs-6" th:text="${#numbers.formatCurrency(trade.proceeds)}"></td>
+											<td th:if="${trade.proceeds == null}"><br></td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table class="table table-bordered table-sm">
+							<thead class="table-secondary">
+							<tr>
+								<th>Option Symbol</th>
+								<th>Date Acquired</th>
+								<th>Expiration Date</th>
+								<th>Strike Price</th>
+								<th>Quantity</th>
+								<th>Cost Basis</th>
+								<th>Proceeds</th>
+								<th>Gain/Loss</th>
+								<th>Date Closed</th>
+								<th>Return %</th>
+								<th>Return % Annualized</th>
+							</tr>
+							</thead>
+							<tr th:each="transaction : ${trade.optionTransactionSummaries}">
+								<td class="fs-6" th:text="${transaction.optionSymbol}"></td>
+								<td class="fs-6" th:text="${transaction.dateAcquired}"></td>
+								<td class="fs-6" th:text="${transaction.expirationDate}"></td>
+								<td class="fs-6" th:text="'$'+${transaction.strikePrice}"></td>
+								<td th:class="${transaction.quantity < 0 ? 'fs-6 bg-danger text-white' : 'fs-6 bg-success text-white' }" th:text="${transaction.quantity}"></td>
+								<td class="fs-6" th:text="'$'+${transaction.costBasis}"></td>
+								<td class="fs-6" th:text="${transaction.proceeds} ? '$'+${transaction?.proceeds} : ${transaction?.proceeds}"></td>
+								<td th:class="${transaction.gainLoss < 0 ? 'fs-6 bg-danger text-white' : 'fs-6 bg-success text-white' }" th:text="'$'+${transaction.gainLoss}"></td>
+								<td class="fs-6" th:text="${transaction.dateClosed}"></td>
+								<td th:if="${transaction.returnPercentage != null}"
+									th:class="${transaction.returnPercentage < 0 ? 'fs-6 bg-danger text-white' : 'fs-6 bg-success text-white' }" th:text="${transaction.returnPercentage} + '%'"></td>
+								<td class="fs-6" th:if="${transaction.returnPercentage == null}"></td>
+								
+								<td th:if="${transaction.returnPercentageAnnualized != null}"
+									th:class="${transaction.returnPercentageAnnualized < 0 ? 'fs-6 bg-danger text-white' : 'fs-6 bg-success text-white' }" th:text="${transaction.returnPercentageAnnualized} + '%'"></td>
+								<td class="fs-6" th:if="${transaction.returnPercentageAnnualized == null}"></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
 			</table>
 		</th:block>
 	</th:block>

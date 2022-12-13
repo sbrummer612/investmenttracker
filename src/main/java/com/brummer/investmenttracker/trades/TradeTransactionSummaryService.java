@@ -3,6 +3,7 @@ package com.brummer.investmenttracker.trades;
 import java.text.DecimalFormat;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.brummer.investmenttracker.transactions.options.summary.OptionTransactionSummary;
@@ -10,11 +11,15 @@ import com.brummer.investmenttracker.transactions.options.summary.OptionTransact
 @Service
 public class TradeTransactionSummaryService {
 
+	@Autowired
+	private StockQuoteService stockQuoteService;
+	
 	public void summarizeTransactions(List<Trade> trades){
 		
 		DecimalFormat df = new DecimalFormat("####0.00");
 		
 		for(Trade trade : trades) {
+			stockQuoteService.getCurrentStockQuote(trade);
 			Double averageReturn = 0d;
 			Double averageAnnualizedReturn = 0d;
 			for(OptionTransactionSummary ots : trade.getOptionTransactionSummaries()) {
@@ -37,6 +42,18 @@ public class TradeTransactionSummaryService {
 			}
 			if(averageAnnualizedReturn != 0d) {
 				trade.setAverageOptionAnnualizedReturn( Double.valueOf( df.format( averageAnnualizedReturn / trade.getOptionTransactionSummaries().size() ) ) ); 
+			}
+			
+			if(trade.getQuantity() != null) {
+				if(trade.getCostBasis() != null) {
+					if(trade.getMostRecentPrice() != null) {
+						trade.setCurrentGainLoss( (trade.getMostRecentPrice() - trade.getCostBasis()) * trade.getQuantity() );
+						if(trade.getAdjustedCostBasis() != null) {
+							trade.setCurrentAdjustedGainLoss( (trade.getMostRecentPrice() - trade.getAdjustedCostBasis() ) * trade.getQuantity() );
+						}
+					}
+					
+				}
 			}
 		}
 		

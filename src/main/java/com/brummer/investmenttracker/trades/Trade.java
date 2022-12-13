@@ -63,10 +63,19 @@ public class Trade {
 	private Double longTermGain;
 	
 	@Transient
+	private Double mostRecentPrice;
+	
+	@Transient
 	private Double adjustedCostBasis;
 	
 	@Transient
 	private Double totalGainLoss;
+	
+	@Transient
+	private Double currentGainLoss;
+	
+	@Transient
+	private double currentAdjustedGainLoss;
 	
 	@Transient
 	private Double averageOptionReturn;
