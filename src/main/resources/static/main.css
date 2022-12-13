@@ -39,3 +39,12 @@ td, th {
     border: 2px solid white; }
     .jumbotron .lang-logo img {
       max-width: 100%; }
+      
+.tradetransbar {
+	display:flex;
+	flex-direction: row;
+	column-gap: 9px;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+

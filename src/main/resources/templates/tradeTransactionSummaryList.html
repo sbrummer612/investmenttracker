@@ -14,11 +14,11 @@
 <body class="container">
 
 <div class="container">
-	
+	<h2></h2>
 	<h1>Trade Transaction Summaries</h1>
 	<h2></h2>
-	<div class="col-sm-3">
-		<form th:method="get" th:action="trades" th:object="${selectedAccount}"> 
+	<div class="tradetransbar">
+		<h4>Account:</h4><form th:method="get" th:action="trades" th:object="${selectedAccount}"> 
 			<select class="form-select form-select-sm mb-1" id="accountDropdownList" name="selectedAccountId" onchange="this.form.submit()"  >
 				<option value="">Select Account</option>
 				<option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}" th:selected="${selectedAccount?.id == account.id}" ></option>
@@ -26,18 +26,18 @@
 			<label class="alert alert-warning" th:if="${#ctx.containsVariable('accountSelectionError')}" th:text="${accountSelectionError}">error</label>
 		</form>
 		
-		<form th:method="post" th:action="tradesByStatus" th:object="${selectedTransactionStatusType}"> 
+		<h4>Transactions:</h4><form th:method="post" th:action="tradesByStatus" th:object="${selectedTransactionStatusType}"> 
 			<select class="form-select form-select-sm mb-1" aria-label=".form-select-lg example" id="transactionStatusTypeDropdownList" name="selectedTransactionStatusType" onchange="this.form.submit()"  >
 				<option th:each="transactionStatusType : ${transactionStatusTypes}" th:value="${transactionStatusType.value}" th:text="${transactionStatusType.name}" th:selected="${selectedTransactionStatusType?.value == transactionStatusType.value}" ></option>
 			</select>
 		</form>
-		<form th:method="post" th:action="tradesBySymbol" th:object="${selectedTransactionSymbol}"> 
+		<h4>Symbols:</h4><form th:method="post" th:action="tradesBySymbol" th:object="${selectedTransactionSymbol}"> 
 			<select class="form-select form-select-sm mb-1" aria-label=".form-select-lg example" id="transactionSymbolDropdownList" name="selectedTransactionSymbol" onchange="this.form.submit()"  >
 				<option value="">All Symbols</option>
 				<option th:each="symbol : ${symbols}" th:value="${symbol}" th:text="${symbol}" th:selected="${selectedTransactionSymbol == symbol}" ></option>
 			</select>
 		</form>
-		<form th:method="post" th:action="tradesByOptionType" th:object="${selectedTransactionOptionType}"> 
+		<h4>Options:</h4><form th:method="post" th:action="tradesByOptionType" th:object="${selectedTransactionOptionType}"> 
 			<select class="form-select form-select-sm mb-1" aria-label=".form-select-lg example" id="transactionOptionTypeDropdownList" name="selectedTransactionOptionType" onchange="this.form.submit()"  >
 				<option th:each="optionType : ${optionTypes}" th:value="${optionType.value}" th:text="${optionType.typeName}" th:selected="${selectedTransactionOptionType == optionType.value}" ></option>
 			</select>
