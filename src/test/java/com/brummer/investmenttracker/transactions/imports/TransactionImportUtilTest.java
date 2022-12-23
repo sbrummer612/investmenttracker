@@ -22,7 +22,7 @@ public class TransactionImportUtilTest {
 	public void testSetUp() {
 		List<Account> accounts = new ArrayList<Account>();
 		Account account = new Account();
-		account.setName("Joint WROS - TOD X30097152");
+		account.setName("Joint WROS - TOD (X30097152)");
 		accounts.add(account);
 		when(accountRepositoryMock.findByName("Joint WROS - TOD X30097152")).thenReturn(accounts);
 	}

@@ -1,5 +1,9 @@
 package com.brummer.investmenttracker.transactions.imports;
 
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 import com.brummer.investmenttracker.constants.EquityType;
 import com.brummer.investmenttracker.constants.OptionType;
 import com.brummer.investmenttracker.transactions.Transaction;
@@ -49,6 +53,17 @@ public abstract class TransactionImporterAbstract {
 		transaction.setSymbol(symbol);
 		if(startsWithLetterAndHasNumber && foundSymbolAndExpDate) {
 			// is an option
+			// ensure the expiration date is valid
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
+				java.util.Date expirationDate = sdf.parse(optionExpDate.toString());
+				new Date(expirationDate.getTime());
+			} catch (ParseException e) {
+				// not valid expiration date to don't return object
+				return null;
+			}
+			
+			
 			transaction.setEquityType(EquityType.OPTION.getValue());
 			if(optionSymbol != null) {
 				if(OptionType.CALL.getValue().equals(optionSymbol.toString())) {

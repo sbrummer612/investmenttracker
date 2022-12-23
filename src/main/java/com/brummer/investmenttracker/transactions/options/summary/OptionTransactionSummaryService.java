@@ -116,6 +116,9 @@ public class OptionTransactionSummaryService {
 			optionTransactionSummary.setOptionSymbol(transaction.getSymbol());
 			if(optionExpDate != null && !"".equals(optionExpDate.toString())) {
 				SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
+				if(optionExpDate.toString().equals("6610")) {
+					System.out.println("got it");
+				}
 				java.util.Date expirationDate = sdf.parse(optionExpDate.toString());
 				optionTransactionSummary.setExpirationDate( new Date(expirationDate.getTime()) );
 			}

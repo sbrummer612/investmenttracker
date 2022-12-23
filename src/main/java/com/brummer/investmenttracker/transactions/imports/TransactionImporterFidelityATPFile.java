@@ -71,8 +71,8 @@ public class TransactionImporterFidelityATPFile extends TransactionImporterAbstr
 		String accountName = fields[10];
 		// remove pre and post quotes
 		accountName = accountName.substring(1, accountName.length() - 1);
-		accountName = accountName.replace("(", "");
-		accountName = accountName.replace(")", "");
+//		accountName = accountName.replace("(", "");
+//		accountName = accountName.replace(")", "");
 		List<Account> accounts = accountRepository.findByName(accountName);
 		if(accounts.size() == 1) {
 			transaction.setAccount(accounts.get(0));

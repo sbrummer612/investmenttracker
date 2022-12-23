@@ -75,7 +75,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		
 		Transaction transaction = transactionImporterFidelityATPFile.parseLine(lineHistoryCallClosingAssigned);
 		assertThat(transaction).isNotNull();
-		assertThat(transaction.getAccount().getName()).isEqualTo("Joint WROS - TOD X30097152");
+		assertThat(transaction.getAccount().getName()).isEqualTo("Joint WROS - TOD (X30097152)");
 		assertThat(transaction.getAction()).isEqualTo("ASSIGNED");
 		assertThat(transaction.getAmount()).isEqualTo(0.00);
 		assertThat(transaction.getQuantity()).isEqualTo(1.0);
@@ -96,7 +96,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		
 		Transaction transaction = transactionImporterFidelityATPFile.parseLine(lineHistoryCallOpeningSell);
 		assertThat(transaction).isNotNull();
-		assertThat(transaction.getAccount().getName()).isEqualTo("Joint WROS - TOD X30097152");
+		assertThat(transaction.getAccount().getName()).isEqualTo("Joint WROS - TOD (X30097152)");
 		assertThat(transaction.getAction()).isEqualTo("YOU SOLD OPENING TRANSACTION");
 		assertThat(transaction.getAmount()).isEqualTo(71.32);
 		assertThat(transaction.getQuantity()).isEqualTo(-1.0);
@@ -115,7 +115,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		
 		Transaction transaction = transactionImporterFidelityATPFile.parseLine(lineHistoryCallBoughtClosingPurchase);
 		assertThat(transaction).isNotNull();
-		assertThat(transaction.getAccount().getName()).isEqualTo("Joint WROS - TOD X30097152");
+		assertThat(transaction.getAccount().getName()).isEqualTo("Joint WROS - TOD (X30097152)");
 		assertThat(transaction.getAction()).isEqualTo("YOU BOUGHT CLOSING TRANSACTION 22313G3R0H");
 		assertThat(transaction.getAmount()).isEqualTo(-64.02);
 		assertThat(transaction.getQuantity()).isEqualTo(1.0);
@@ -134,7 +134,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		
 		Transaction transaction = transactionImporterFidelityATPFile.parseLine(lineHistoryCallExpiredWorthless);
 		assertThat(transaction).isNotNull();
-		assertThat(transaction.getAccount().getName()).isEqualTo("Joint WROS - TOD X30097152");
+		assertThat(transaction.getAccount().getName()).isEqualTo("Joint WROS - TOD (X30097152)");
 		assertThat(transaction.getAction()).isEqualTo("EXPIRED CALL (SPY) SPDR S&P500 ETF NOV 11 22 $395 (100 SHS)");
 		assertThat(transaction.getAmount()).isEqualTo(0.00);
 		assertThat(transaction.getQuantity()).isEqualTo(1.0);
@@ -154,7 +154,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		
 		Transaction transaction = transactionImporterFidelityATPFile.parseLine(lineStockWithCommaInAmount);
 		assertThat(transaction).isNotNull();
-		assertThat(transaction.getAccount().getName()).isEqualTo("Joint WROS - TOD X30097152");
+		assertThat(transaction.getAccount().getName()).isEqualTo("Joint WROS - TOD (X30097152)");
 		assertThat(transaction.getAction()).isEqualTo("YOU BOUGHT");
 		assertThat(transaction.getAmount()).isEqualTo(-3465.50);
 		assertThat(transaction.getQuantity()).isEqualTo(100.0);
@@ -190,12 +190,24 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 	}
 	
 	@Test
+	void lineWithWeirdSymbol2() {
+		testSetUp();
+		String lineA = "\"05/16/2022\",\"G6610J209\",\"NOBLE CORP NEW COM USD0.00001 *EXCHANGED FOR CUSIP G65431127*\",\"100\",\"YOU BOUGHT\",\"$35.96\",\"$-3,596.00\",\"$0.00\",\"$0.00\",\"Cash\",\"Joint WROS - TOD (X30097152)\"";
+		String lineB = "\"05/17/2022\",\"G6610J209\",\"NOBLE CORP NEW COM USD0.00001 *EXCHANGED FOR CUSIP G65431127*\",\"-100\",\"YOU SOLD 22136H4VLO\",\"$35.0315\",\"$3,503.06\",\"$0.00\",\"$0.09\",\"Cash\",\"Joint WROS - TOD (X30097152)\"";
+		Transaction transaction1 = transactionImporterFidelityATPFile.parseLine(lineA);
+		assertThat(transaction1).isNull();
+		
+		Transaction transaction2 = transactionImporterFidelityATPFile.parseLine(lineB);
+		assertThat(transaction2).isNull();
+	}
+	
+	@Test
 	void lineWithCallSymbolChange() {
 		testSetUp();
 		String lineA = "\"06/09/2022\",\"META220701C210\",\"CALL (META) META PLATFORMS INC JUL 01 22 $210 (100 SHS)\",\"-1\",\"DISTRIBUTION SYMBOL CHANGE\",\"$0.00\",\"$0.00\",\"$0.00\",\"$0.00\",\"Margin\",\"Joint WROS - TOD (X30097152)\"";
 		Transaction transaction1 = transactionImporterFidelityATPFile.parseLine(lineA);
 		assertThat(transaction1).isNotNull();
-		assertThat(transaction1.getAccount().getName()).isEqualTo("Joint WROS - TOD X30097152");
+		assertThat(transaction1.getAccount().getName()).isEqualTo("Joint WROS - TOD (X30097152)");
 		assertThat(transaction1.getAction()).isEqualTo("DISTRIBUTION SYMBOL CHANGE");
 		assertThat(transaction1.getAmount()).isEqualTo(0.00);
 		assertThat(transaction1.getQuantity()).isEqualTo(-1.0);
@@ -209,7 +221,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		Transaction transaction2 = transactionImporterFidelityATPFile.parseLine(lineB);
 		
 		assertThat(transaction2).isNotNull();
-		assertThat(transaction2.getAccount().getName()).isEqualTo("Joint WROS - TOD X30097152");
+		assertThat(transaction2.getAccount().getName()).isEqualTo("Joint WROS - TOD (X30097152)");
 		assertThat(transaction2.getAction()).isEqualTo("YOU BOUGHT CLOSING TRANSACTION");
 		assertThat(transaction2.getAmount()).isEqualTo(-19.03);
 		assertThat(transaction2.getQuantity()).isEqualTo(1.0);
@@ -227,7 +239,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		String lineA = "\"11/30/2022\",\"SPY221202P399\",\"PUT (SPY) SPDR S&P500 ETF DEC 02 22 $399 (100 SHS)\",\"1\",\"YOU BOUGHT CLOSING TRANSACTION 22334H1R6E\",\"$1.64\",\"$-164.67\",\"$0.65\",\"$0.02\",\"Cash\",\"Joint WROS - TOD (X30097152)\"";
 		Transaction transaction1 = transactionImporterFidelityATPFile.parseLine(lineA);
 		assertThat(transaction1).isNotNull();
-		assertThat(transaction1.getAccount().getName()).isEqualTo("Joint WROS - TOD X30097152");
+		assertThat(transaction1.getAccount().getName()).isEqualTo("Joint WROS - TOD (X30097152)");
 		assertThat(transaction1.getAction()).isEqualTo("YOU BOUGHT CLOSING TRANSACTION 22334H1R6E");
 		assertThat(transaction1.getAmount()).isEqualTo(-164.67);
 		assertThat(transaction1.getQuantity()).isEqualTo(1.0);
@@ -245,7 +257,7 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		String lineA = "\"11/30/2022\",\"SPY221202P399\",\"PUT (SPY) SPDR S&P500 ETF DEC 02 22 $399 (100 SHS)\",\"-2\",\"YOU SOLD OPENING TRANSACTION\",\"$2.21\",\"$440.64\",\"$1.30\",\"$0.06\",\"Cash\",\"Joint WROS - TOD (X30097152)\"";
 		Transaction transaction1 = transactionImporterFidelityATPFile.parseLine(lineA);
 		assertThat(transaction1).isNotNull();
-		assertThat(transaction1.getAccount().getName()).isEqualTo("Joint WROS - TOD X30097152");
+		assertThat(transaction1.getAccount().getName()).isEqualTo("Joint WROS - TOD (X30097152)");
 		assertThat(transaction1.getAction()).isEqualTo("YOU SOLD OPENING TRANSACTION");
 		assertThat(transaction1.getAmount()).isEqualTo(440.64);
 		assertThat(transaction1.getQuantity()).isEqualTo(-2.0);
@@ -255,5 +267,6 @@ public class TransactionImporterFidelityATPFileTest extends TransactionImportUti
 		assertThat(transaction1.getTransactionDate().toString()).isEqualTo("2022-11-30");
 		assertThat(transaction1.getEquityType()).isEqualTo(EquityType.OPTION.getValue());
 	}
+	
 	
 }
