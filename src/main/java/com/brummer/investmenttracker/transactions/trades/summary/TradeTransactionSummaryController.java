@@ -1,6 +1,9 @@
 package com.brummer.investmenttracker.transactions.trades.summary;
 
+import java.sql.Date;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -48,29 +51,35 @@ public class TradeTransactionSummaryController {
 	@GetMapping("/trades")
 	public String trades(@RequestParam(required = false) String selectedAccountId, Model model, HttpServletRequest request) throws ParseException {
 		
-		populate(selectedAccountId, null, null, null, model, request);
+		populate(selectedAccountId, null, null, null, null, null, model, request);
 		return "tradeTransactionSummaryList";
 	}
 	
 	@RequestMapping("/tradesByStatus")
 	public String tradesByStatus(@ModelAttribute("selectedTransactionStatusType") TransactionStatusType transactionStatusType, Model model, HttpServletRequest request) throws ParseException {
-		populate(null, transactionStatusType, null, null, model, request);
+		populate(null, transactionStatusType, null, null, null, null, model, request);
 		return "tradeTransactionSummaryList";
 	}
 	
 	@RequestMapping("/tradesBySymbol")
 	public String tradesBySymbol(@ModelAttribute("selectedTransactionSymbol") String stockSymbol, Model model, HttpServletRequest request) throws ParseException {
-		populate(null, null, stockSymbol, null, model, request);
+		populate(null, null, stockSymbol, null, null, null, model, request);
 		return "tradeTransactionSummaryList";
 	}
 	
 	@RequestMapping("/tradesByOptionType")
 	public String tradesByOptionType(@ModelAttribute("selectedTransactionOptionType") String optionType, Model model, HttpServletRequest request) throws ParseException {
-		populate(null, null, null, optionType, model, request);
+		populate(null, null, null, optionType, null, null, model, request);
+		return "tradeTransactionSummaryList";
+	}
+	
+	@RequestMapping("/tradesByDate")
+	public String tradesByDate(@ModelAttribute("selectedStartDate") String selectedStartDate, @ModelAttribute("selectedEndDate") String selectedEndDate,  Model model, HttpServletRequest request) throws ParseException {
+		populate(null, null, null, null, selectedStartDate, selectedEndDate, model, request);
 		return "tradeTransactionSummaryList";
 	}
 
-	private void populate(String selectedAccountId, TransactionStatusType transactionStatusType, String stockSymbol, String optionType, Model model, HttpServletRequest request) throws ParseException {
+	private void populate(String selectedAccountId, TransactionStatusType transactionStatusType, String stockSymbol, String optionType, String selectedStartDate, String selectedEndDate, Model model, HttpServletRequest request) throws ParseException {
 		
 		List<Account> accounts = new ArrayList<Account>();
 		Account allAccount = new Account();
@@ -117,6 +126,31 @@ public class TradeTransactionSummaryController {
 			stockSymbol = (String) request.getSession().getAttribute("selectedTransactionSymbol");
 		}
 		
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // "MM/dd/yyyy");
+		if(selectedStartDate == null) {
+			selectedStartDate = (String)request.getSession().getAttribute("selectedStartDate");
+		}
+		if(selectedStartDate == null || "".equals(selectedStartDate)) {
+			selectedStartDate = LocalDate.now().minusDays(30).toString();// .withDayOfMonth(1).toString();
+			request.getSession().setAttribute("selectedStartDate", selectedStartDate);
+		}
+		model.addAttribute("selectedStartDate", selectedStartDate);
+		request.getSession().setAttribute("selectedStartDate", selectedStartDate);
+		java.util.Date sDate = dateFormat.parse(selectedStartDate);
+		Date startDate = new Date(sDate.getTime());
+		
+		if(selectedEndDate == null) {
+			selectedEndDate = (String)request.getSession().getAttribute("selectedEndDate");
+		}
+		if(selectedEndDate == null || "".equals(selectedEndDate)) {
+			selectedEndDate = LocalDate.now().toString();
+			request.getSession().setAttribute("selectedEndDate", selectedEndDate);
+		}
+		model.addAttribute("selectedEndDate", selectedEndDate);
+		request.getSession().setAttribute("selectedEndDate", selectedEndDate);
+		java.util.Date eDate = dateFormat.parse(selectedEndDate);
+		Date endDate = new Date(eDate.getTime());
+		
 		if(account != null && account.getId() != 0) {
 			model.addAttribute("selectedAccount", account);
 			request.getSession().setAttribute("selectedAccount", account);
@@ -158,22 +192,70 @@ public class TradeTransactionSummaryController {
 			for(Trade trade : trades) {
 				
 				if(optionType == null || OptionType.ALL.getValue().equals(optionType)) {
-					trade.setOptionTransactionSummaries(
+					if(transactionStatusType != null && TransactionStatusType.OPEN.getValue().equals(transactionStatusType.getValue())) {
+						trade.setOptionTransactionSummaries(
 							optionTransactionSummaryService.summarizeTransactions(
 								transactionRepository.findByAccount(trade.getAccount()), 
 								transactionStatusType, 
 								trade.getSymbol()
 							)
 						);
+					}
+					else {
+						trade.setOptionTransactionSummaries(
+							optionTransactionSummaryService.summarizeTransactions(
+								transactionRepository.findByAccount(trade.getAccount()), 
+								transactionStatusType, 
+								trade.getSymbol()
+							).stream()
+							.filter(
+									ots -> 
+									( 
+										ots.getDateClosed() == null 
+									)
+									||
+									(
+										ots.getDateClosed() != null && 
+										( startDate.before(ots.getDateClosed()) || startDate.equals(ots.getDateClosed()) ) && 
+										( endDate.after(ots.getDateClosed()) || endDate.equals(ots.getDateClosed()) )
+									)
+							)
+							.collect(Collectors.toList())
+						);
+					}
 				}
 				else {
-					trade.setOptionTransactionSummaries(
+					if(transactionStatusType != null && TransactionStatusType.OPEN.getValue().equals(transactionStatusType.getValue())) {
+						trade.setOptionTransactionSummaries(
 							optionTransactionSummaryService.summarizeTransactions(
 								transactionRepository.findByAccountAndOptionType(trade.getAccount(), optionType), 
 								transactionStatusType, 
 								trade.getSymbol()
 							)
 						);
+					}
+					else {
+						trade.setOptionTransactionSummaries(
+							optionTransactionSummaryService.summarizeTransactions(
+								transactionRepository.findByAccountAndOptionType(trade.getAccount(), optionType), 
+								transactionStatusType, 
+								trade.getSymbol()
+							).stream()
+							.filter(
+									ots -> 
+									( 
+										ots.getDateClosed() == null 
+									)
+									||
+									(
+										ots.getDateClosed() != null && 
+										( startDate.before(ots.getDateClosed()) || startDate.equals(ots.getDateClosed()) ) && 
+										( endDate.after(ots.getDateClosed()) || endDate.equals(ots.getDateClosed()) )
+									)
+							)
+							.collect(Collectors.toList())
+						);
+					}
 				}
 				
 				

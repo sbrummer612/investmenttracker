@@ -43,6 +43,14 @@
 			</select>
 		</form>
 	</div>
+	<div class="tradetransbar">
+		<h5>Transaction Start Date:</h5><form th:method="post" th:action="tradesByDate" th:object="${selectedStartDate}">
+			<input class="form-select form-select-sm mb-1" name="selectedStartDate" placeholder="Enter Start Date" th:value="${selectedStartDate}" type="date" onchange="this.form.submit()" />
+		</form>
+		<h5>Transaction End Date:</h5><form th:method="post" th:action="tradesByDate" th:object="${selectedEndDate}">
+			<input class="form-select form-select-sm mb-1" name="selectedEndDate" placeholder="Enter End Date" th:value="${selectedEndDate}" type="date" onchange="this.form.submit()" />
+		</form>
+	</div>
 	<table th:if="${tradeSummary}" class="table table-bordered">
 		<thead class="table-secondary">
 			<tr>
