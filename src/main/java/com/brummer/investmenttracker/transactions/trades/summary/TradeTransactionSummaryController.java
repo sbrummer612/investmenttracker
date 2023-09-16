@@ -127,19 +127,20 @@ public class TradeTransactionSummaryController {
 		}
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); // "MM/dd/yyyy");
-		if(selectedStartDate == null) {
+		
+		if(selectedStartDate == null || "".equals(selectedStartDate)) {
 			selectedStartDate = (String)request.getSession().getAttribute("selectedStartDate");
 		}
 		if(selectedStartDate == null || "".equals(selectedStartDate)) {
 			selectedStartDate = LocalDate.now().minusDays(30).toString();// .withDayOfMonth(1).toString();
-			request.getSession().setAttribute("selectedStartDate", selectedStartDate);
+			request.getSession().setAttribute("selectedStartDate", selectedStartDate);	
 		}
 		model.addAttribute("selectedStartDate", selectedStartDate);
 		request.getSession().setAttribute("selectedStartDate", selectedStartDate);
 		java.util.Date sDate = dateFormat.parse(selectedStartDate);
 		Date startDate = new Date(sDate.getTime());
 		
-		if(selectedEndDate == null) {
+		if(selectedEndDate == null || "".equals(selectedEndDate)) {
 			selectedEndDate = (String)request.getSession().getAttribute("selectedEndDate");
 		}
 		if(selectedEndDate == null || "".equals(selectedEndDate)) {
